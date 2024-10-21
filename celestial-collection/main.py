@@ -57,7 +57,7 @@ def get_planets():
         {
             ?planet wdt:P31 wd:Q30014 .
         }
-        OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }  # Distance from Earth
+        OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }
         FILTER (?planet != wd:Q3542479)
         
         SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
@@ -65,7 +65,6 @@ def get_planets():
         GROUP BY ?planet ?planetLabel
     """
 
-    # Send the SPARQL query to Wikidata
     response = requests.get(WIKIDATA_SPARQL_URL, params={"query": query}, headers=headers)
 
     if response.status_code != 200:
@@ -131,7 +130,6 @@ def get_planet_details(planet_name: str):
     GROUP BY ?planet ?planetLabel
     """
 
-    # Send the SPARQL query to Wikidata
     response = requests.get(WIKIDATA_SPARQL_URL, params={"query": query}, headers=headers)
 
     if response.status_code != 200:
@@ -168,6 +166,7 @@ def get_planet_details(planet_name: str):
 
 @app.get("/planets/{planet_name}/moons", response_model=List[Moon])
 def get_moons_for_planet(planet_name: str):
+    
     headers = {
         "Accept": "application/sparql-results+json"
     }
@@ -183,7 +182,6 @@ def get_moons_for_planet(planet_name: str):
             ?moon wdt:P397 ?planet .
             ?planet wdt:P398 ?moon .
             
-            # Optional discoverer
             OPTIONAL {{
             ?moon wdt:P61 ?discoverer .
             ?discoverer wdt:P31 wd:Q5 . # Discoverer is human
@@ -191,7 +189,7 @@ def get_moons_for_planet(planet_name: str):
             FILTER(LANG(?discovererLabel) = "en")
             }}
 
-            # Instances of various types of moons
+            # Instance of ...
             {{
             ?moon wdt:P31 wd:Q1086783 .  # Regular moon
             }} UNION {{
@@ -214,7 +212,6 @@ def get_moons_for_planet(planet_name: str):
  
     """
 
-    # Send the SPARQL query to Wikidata
     response = requests.get(WIKIDATA_SPARQL_URL, params={"query": query}, headers=headers)
 
     if response.status_code != 200:
@@ -225,7 +222,6 @@ def get_moons_for_planet(planet_name: str):
 
     moons = []
 
-    # Process the results to extract moon information
     for result in results:
         name = result['moonLabel']['value']
         discoverer = result['discovererLabel']['value']

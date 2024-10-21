@@ -48,6 +48,22 @@ Saturno, Mercurio, Urano, Neptuno - KELVIN
 PLANETAS SISTEMA SOLAR NOMBRES
 -----------------------------
 
+SELECT ?planet ?planetLabel 
+            (SAMPLE(?distanceFromEarth) AS ?distanceFromEarth)
+        WHERE {
+        {
+            ?planet wdt:P31 wd:Q3504248 .
+        }
+        UNION
+        {
+            ?planet wdt:P31 wd:Q30014 .
+        }
+        OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }  # Distance from Earth
+        FILTER (?planet != wd:Q3542479)
+        
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+        }
+        GROUP BY ?planet ?planetLabel
 
 -----------------------------
 PLANETA CONCRETO
