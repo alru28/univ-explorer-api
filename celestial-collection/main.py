@@ -37,10 +37,7 @@ class PlanetDetail(PlanetBase):
 
 class Moon(BaseModel):
     name: str
-    radius: Optional[float]
-    mass: Optional[float]
-    gravity: Optional[float]
-    distanceFromPlanet: Optional[float]
+    discoverer: Optional[str] = "None"
 
 
 @app.get("/planets", response_model=List[PlanetBase])
@@ -63,7 +60,7 @@ def get_planets():
         OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }  # Distance from Earth
         FILTER (?planet != wd:Q3542479)
         
-        SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
         }
         GROUP BY ?planet ?planetLabel
     """
@@ -169,6 +166,76 @@ def get_planet_details(planet_name: str):
         demonym=demonym
     )
 
+@app.get("/planets/{planet_name}/moons", response_model=List[Moon])
+def get_moons_for_planet(planet_name: str):
+    headers = {
+        "Accept": "application/sparql-results+json"
+    }
+
+    if planet_name not in VALID_PLANET_NAMES:
+        raise HTTPException(status_code=400, detail=f"Planet '{planet_name}' is not a valid planet. Choose from: {', '.join(VALID_PLANET_NAMES)}")
+
+    query = f"""
+        SELECT ?moon ?moonLabel (SAMPLE(COALESCE(?discovererLabel, "Humanity")) AS ?discovererLabel)
+        WHERE {{
+            ?planet rdfs:label "{planet_name}"@en .
+            
+            ?moon wdt:P397 ?planet .
+            ?planet wdt:P398 ?moon .
+            
+            # Optional discoverer
+            OPTIONAL {{
+            ?moon wdt:P61 ?discoverer .
+            ?discoverer wdt:P31 wd:Q5 . # Discoverer is human
+            ?discoverer rdfs:label ?discovererLabel .
+            FILTER(LANG(?discovererLabel) = "en")
+            }}
+
+            # Instances of various types of moons
+            {{
+            ?moon wdt:P31 wd:Q1086783 .  # Regular moon
+            }} UNION {{
+            ?moon wdt:P31 wd:Q177268 .   # Moon of Mars
+            }} UNION {{
+            ?moon wdt:P31 wd:Q61702557 . # Moon of Jupiter
+            }} UNION {{
+            ?moon wdt:P31 wd:Q1972 .     # Moon of Saturn
+            }} UNION {{
+            ?moon wdt:P31 wd:Q2152 .     # Moon of Uranus
+            }} UNION {{
+            ?moon wdt:P31 wd:Q2139 .     # Moon of Neptune
+            }}
+
+            SERVICE wikibase:label {{ bd:serviceParam wikibase:language "en". }}
+        }}
+        GROUP BY ?moon ?moonLabel
+        ORDER BY RAND()  # Randomize the results
+        LIMIT 10
+ 
+    """
+
+    # Send the SPARQL query to Wikidata
+    response = requests.get(WIKIDATA_SPARQL_URL, params={"query": query}, headers=headers)
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Failed to fetch data from Wikidata")
+
+    data = response.json()
+    results = data['results']['bindings']
+
+    moons = []
+
+    # Process the results to extract moon information
+    for result in results:
+        name = result['moonLabel']['value']
+        discoverer = result['discovererLabel']['value']
+
+        moons.append(Moon(
+            name=name,
+            discoverer=discoverer
+        ))
+
+    return moons
 
 # DEBUG
 if __name__ == "__main__":

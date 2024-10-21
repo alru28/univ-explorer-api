@@ -1,7 +1,7 @@
 SPARQL Queries
 
 -----------------------------
-PLANETAS SISTEMA SOLAR
+PLANETAS SISTEMA SOLAR COMPLETA
 -----------------------------
 
 
@@ -12,6 +12,7 @@ SELECT ?planet ?planetLabel
        (SAMPLE(?diameter) AS ?diameter) 
        (SAMPLE(?gravity) AS ?gravity) 
        (SAMPLE(COALESCE(?demonymEng, ?demonymOther)) AS ?demonym)  # Prioritize English demonym
+       (SAMPLE(?mass) AS ?mass)  # Mass of the planet
 WHERE {
   {
     ?planet wdt:P31 wd:Q3504248 .  # Inner planet of the Solar System
@@ -25,6 +26,7 @@ WHERE {
   OPTIONAL { ?planet wdt:P2120 ?radius . }  # Radius
   OPTIONAL { ?planet wdt:P2386 ?diameter . }  # Diameter
   OPTIONAL { ?planet wdt:P7015 ?gravity . }  # Surface gravity
+  OPTIONAL { ?planet wdt:P2067 ?mass . }  # Mass
   OPTIONAL { ?planet wdt:P1549 ?demonymEng . FILTER (lang(?demonymEng) = "en") }  # Demonym (only in English)
   OPTIONAL { ?planet wdt:P1549 ?demonymOther . }  # Demonym (any other language)
   
@@ -42,31 +44,85 @@ Saturno, Mercurio, Urano, Neptuno - KELVIN
 
 
 
+-----------------------------
+PLANETAS SISTEMA SOLAR NOMBRES
+-----------------------------
+
+
+-----------------------------
+PLANETA CONCRETO
+-----------------------------
+
+
+SELECT ?planet ?planetLabel 
+        (SAMPLE(?distanceFromEarth) AS ?distanceFromEarth)
+        (SAMPLE(IF(BOUND(?temperature), ?temperature, "-110")) AS ?temperature)
+        (SAMPLE(?radius) AS ?radius)
+        (SAMPLE(?diameter) AS ?diameter)
+        (SAMPLE(?gravity) AS ?gravity)
+        (SAMPLE(?mass) AS ?mass)
+        (SAMPLE(COALESCE(?demonymEng, ?demonymOther)) AS ?demonym)
+    WHERE {
+        {
+            ?planet wdt:P31 wd:Q3504248 .
+        }
+        UNION
+        {
+            ?planet wdt:P31 wd:Q30014 .
+        }
+        ?planet rdfs:label "Saturn"@en .
+        
+        OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }  # Distance from Earth
+        OPTIONAL { ?planet wdt:P2076 ?temperature . }  # Temperature
+        OPTIONAL { ?planet wdt:P2120 ?radius . }  # Radius
+        OPTIONAL { ?planet wdt:P2386 ?diameter . }  # Diameter
+        OPTIONAL { ?planet wdt:P7015 ?gravity . }  # Gravity
+        OPTIONAL { ?planet wdt:P2067 ?mass . }  # Mass
+        OPTIONAL { ?planet wdt:P1549 ?demonymEng . FILTER (lang(?demonymEng) = "en") }  # Demonym (in English)
+        OPTIONAL { ?planet wdt:P1549 ?demonymOther . }  # Demonym (any other language)
+        
+        SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
+    }
+    GROUP BY ?planet ?planetLabel
+
+
 
 -----------------------------
 LUNAS
 -----------------------------
 
-SELECT ?moon ?moonLabel (SAMPLE(?radius) AS ?radius) (SAMPLE(?gravity) AS ?gravity) (SAMPLE(?temperature) AS ?temperature) WHERE {
-  # Specify the planet whose moons you want to retrieve
-  BIND(wd:Q332 AS ?planet)  # Planet (e.g., Saturn, replace as needed)
-  
-  # Find moons that orbit the specified planet
-  ?moon wdt:P31 wd:Q1086783 .  # Moons must be regular moons (instance of Q1086783)
-  ?moon wdt:P397 ?planet .  # Parent astronomical body is the planet
-  
-  # Retrieve the required properties
-  ?moon wdt:P2120 ?radius # Radius
-  OPTIONAL { ?moon wdt:P7015 ?gravity . }  # Surface gravity
-  OPTIONAL { ?moon wdt:P2076 ?temperature . }  # Temperature
-  
-  # Ensure the labels are in English
-  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+SELECT ?moon ?moonLabel (SAMPLE(COALESCE(?discovererLabel, "Humanity")) AS ?discovererLabel)
+WHERE {
+    ?planet rdfs:label "Neptune"@en .
+    
+    ?moon wdt:P397 ?planet .
+    ?planet wdt:P398 ?moon .
+    
+    # Optional discoverer
+    OPTIONAL {
+      ?moon wdt:P61 ?discoverer .
+      ?discoverer wdt:P31 wd:Q5 . # Discoverer is human
+      ?discoverer rdfs:label ?discovererLabel .
+      FILTER(LANG(?discovererLabel) = "en")
+    }
+
+    # Instances of various types of moons
+    {
+      ?moon wdt:P31 wd:Q1086783 .  # Regular moon
+    } UNION {
+      ?moon wdt:P31 wd:Q177268 .   # Moon of Mars
+    } UNION {
+      ?moon wdt:P31 wd:Q61702557 . # Moon of Jupiter
+    } UNION {
+      ?moon wdt:P31 wd:Q1972 .     # Moon of Saturn
+    } UNION {
+      ?moon wdt:P31 wd:Q2152 .     # Moon of Uranus
+    } UNION {
+      ?moon wdt:P31 wd:Q2139 .     # Moon of Neptune
+    }
+
+    SERVICE wikibase:label { bd:serviceParam wikibase:language "en". }
 }
-GROUP BY ?moonLabel ?moon  # Group by moonLabel to ensure uniqueness
+GROUP BY ?moon ?moonLabel
 ORDER BY RAND()  # Randomize the results
-LIMIT 5
-
-
-
-LA DE ARRIBA ES SEMI FUNCIONAL, HABRÍA QUE HACER UNA PARA CADA PLANETA CON EL OBJETO "MOON OF ..."
+LIMIT 10
