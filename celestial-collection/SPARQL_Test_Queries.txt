@@ -1,0 +1,72 @@
+SPARQL Queries
+
+-----------------------------
+PLANETAS SISTEMA SOLAR
+-----------------------------
+
+
+SELECT ?planet ?planetLabel 
+       (SAMPLE(?distanceFromEarth) AS ?distanceFromEarth) 
+       (SAMPLE(IF(BOUND(?temperature), ?temperature, "-110")) AS ?temperature) # Handle case of Jupiter not having temperature
+       (SAMPLE(?radius) AS ?radius) 
+       (SAMPLE(?diameter) AS ?diameter) 
+       (SAMPLE(?gravity) AS ?gravity) 
+       (SAMPLE(COALESCE(?demonymEng, ?demonymOther)) AS ?demonym)  # Prioritize English demonym
+WHERE {
+  {
+    ?planet wdt:P31 wd:Q3504248 .  # Inner planet of the Solar System
+  }
+  UNION
+  {
+    ?planet wdt:P31 wd:Q30014 .  # Outer planet
+  }
+  OPTIONAL { ?planet wdt:P2583 ?distanceFromEarth . }  # Distance from Earth
+  OPTIONAL { ?planet wdt:P2076 ?temperature . }  # Temperature
+  OPTIONAL { ?planet wdt:P2120 ?radius . }  # Radius
+  OPTIONAL { ?planet wdt:P2386 ?diameter . }  # Diameter
+  OPTIONAL { ?planet wdt:P7015 ?gravity . }  # Surface gravity
+  OPTIONAL { ?planet wdt:P1549 ?demonymEng . FILTER (lang(?demonymEng) = "en") }  # Demonym (only in English)
+  OPTIONAL { ?planet wdt:P1549 ?demonymOther . }  # Demonym (any other language)
+  
+  FILTER (?planet != wd:Q3542479)  # Exclude Tuxing (Mars alternative)
+  
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+GROUP BY ?planet ?planetLabel
+
+
+
+Tierra, Marte, Venus, Jupiter - CELSIUS
+
+Saturno, Mercurio, Urano, Neptuno - KELVIN
+
+
+
+
+-----------------------------
+LUNAS
+-----------------------------
+
+SELECT ?moon ?moonLabel (SAMPLE(?radius) AS ?radius) (SAMPLE(?gravity) AS ?gravity) (SAMPLE(?temperature) AS ?temperature) WHERE {
+  # Specify the planet whose moons you want to retrieve
+  BIND(wd:Q332 AS ?planet)  # Planet (e.g., Saturn, replace as needed)
+  
+  # Find moons that orbit the specified planet
+  ?moon wdt:P31 wd:Q1086783 .  # Moons must be regular moons (instance of Q1086783)
+  ?moon wdt:P397 ?planet .  # Parent astronomical body is the planet
+  
+  # Retrieve the required properties
+  ?moon wdt:P2120 ?radius # Radius
+  OPTIONAL { ?moon wdt:P7015 ?gravity . }  # Surface gravity
+  OPTIONAL { ?moon wdt:P2076 ?temperature . }  # Temperature
+  
+  # Ensure the labels are in English
+  SERVICE wikibase:label { bd:serviceParam wikibase:language "[AUTO_LANGUAGE],en". }
+}
+GROUP BY ?moonLabel ?moon  # Group by moonLabel to ensure uniqueness
+ORDER BY RAND()  # Randomize the results
+LIMIT 5
+
+
+
+LA DE ARRIBA ES SEMI FUNCIONAL, HABRÍA QUE HACER UNA PARA CADA PLANETA CON EL OBJETO "MOON OF ..."
