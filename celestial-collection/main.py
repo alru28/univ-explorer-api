@@ -9,7 +9,7 @@ from fastapi.middleware.cors import CORSMiddleware
 WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql"
 VALID_PLANET_NAMES = ["Earth", "Mars", "Saturn", "Venus", "Mercury", "Uranus", "Neptune", "Jupiter"]
 
-app = FastAPI()
+app = FastAPI(title="Celestial Collection API", openapi_url="/openapi.json")
 
 # Configure CORS
 app.add_middleware(
