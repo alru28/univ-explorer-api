@@ -11,11 +11,11 @@ app = FastAPI(title="UnivExplorer API", openapi_url="/openapi.json")
 client = httpx.Client()
 
 @app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def todo_service_proxy(path: str, request: Request):
+async def collection_service_proxy(path: str, request: Request):
     return await proxy_request(request, COLLECTION_SERVICE_URL)
 
 @app.api_route("/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def user_service_proxy(path: str, request: Request):
+async def auth_service_proxy(path: str, request: Request):
     return await proxy_request(request, AUTH_SERVICE_URL)
 
 async def proxy_request(request: Request, service_url: str):
