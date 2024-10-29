@@ -1,0 +1,51 @@
+version: '3.8'
+
+services:
+  gateway:
+    build: ./api-gateway
+    ports:
+      - "8080:8080"
+    depends_on:
+      - auth-service
+      - collection-service
+    environment:
+      - COLLECTION_SERVICE_URL=http://collection-service:8000
+      - AUTH_SERVICE_URL=http://auth-service:3000
+    networks:
+      - univ-network
+
+  auth-service:
+    build: ./auth-service
+    environment:
+      - DB_HOST=postgres
+      - DB_PORT=5432
+      - DB_USER=postgres_user
+      - DB_PASSWORD=postgres_pass
+      - DB_NAME=user_db
+    networks:
+      - univ-network
+    depends_on:
+      - postgres
+
+  collection-service:
+    build: ./celestial-collection
+    networks:
+      - univ-network
+
+  postgres:
+    image: postgres:13
+    environment:
+      POSTGRES_USER: postgres_user
+      POSTGRES_PASSWORD: postgres_pass
+      POSTGRES_DB: user_db
+    networks:
+      - univ-network
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+
+volumes:
+  postgres_data:
+
+networks:
+  univ-network:
+    driver: bridge
