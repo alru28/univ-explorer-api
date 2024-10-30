@@ -66,7 +66,7 @@ router.post('/login', async (req, res) => {
                 secret,
                 { expiresIn: '2h' }
             );
-            res.json({ token });
+            res.json({ token: "Bearer " + token });
         } else {
             res.status(400).json({ error: 'Invalid credentials' });
         }
@@ -77,11 +77,14 @@ router.post('/login', async (req, res) => {
 });
 
 router.get('/verify', (req, res) => {
-    const token = req.headers['authorization'];
+    const authHeader = req.headers['authorization'];
 
-    if (!token) {
-        return res.status(401).json({ error: 'Authorization JWT token is missing' });
+    if (!authHeader || !authHeader.startsWith("Bearer ")) {
+        return res.status(401).json({ error: 'Authorization JWT token is missing or malformed' });
     }
+    
+    // Remove "Bearer " prefix
+    const token = authHeader.split(" ")[1];
 
     // Verify
     jwt.verify(token, secret, (err, decoded) => {

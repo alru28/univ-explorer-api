@@ -47,7 +47,7 @@ async def collection_service_proxy(path: str, request: Request, token_verified: 
     target_url = f"{COLLECTION_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
-@app.api_route("/users/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/user/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
 async def auth_service_proxy(path: str, request: Request):
     target_url = f"{AUTH_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
