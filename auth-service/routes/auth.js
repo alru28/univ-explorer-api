@@ -3,7 +3,7 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-const secret = process.env.JWT_SECRET || 'secret';
+const secret = process.env.JWT_SECRET || 'example_secret';
 
 // Test endpoint
 router.get('/test', (req, res) => {
@@ -74,6 +74,23 @@ router.post('/login', async (req, res) => {
         console.error('Login error:', error);
         res.status(500).json({ error: 'Server error during login' });
     }
+});
+
+router.get('/verify', (req, res) => {
+    const token = req.headers['authorization'];
+
+    if (!token) {
+        return res.status(401).json({ error: 'Authorization JWT token is missing' });
+    }
+
+    // Verify
+    jwt.verify(token, secret, (err, decoded) => {
+        if (err) {
+            return res.status(401).json({ error: 'Invalid token' });
+        }
+
+        res.status(200).json({ message: 'Token is valid', user: decoded });
+    });
 });
 
 module.exports = router;
