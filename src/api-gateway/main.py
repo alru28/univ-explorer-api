@@ -5,6 +5,7 @@ import os
 # MICROSERVICES
 COLLECTION_SERVICE_URL = os.getenv("COLLECTION_SERVICE_URL", "http://collection-service:8000")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://auth-service:3000")
+EXPLORATION_SERVICE_URL = os.getenv("EXPLORATION_SERVICE_URL", "http://exploration-service:8000")
 
 # GATEWAY HELPER FUNCTIONS
 
@@ -52,7 +53,10 @@ async def auth_service_proxy(path: str, request: Request):
     target_url = f"{AUTH_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
-
+@app.api_route("/explore/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def exploration_service_proxy(path: str, request: Request):
+    target_url = f"{EXPLORATION_SERVICE_URL}/{path}".lstrip("/")
+    return await proxy_request(request, target_url)
 
 if __name__ == "__main__":
     import uvicorn

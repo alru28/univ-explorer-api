@@ -34,6 +34,7 @@ class PlanetDetail(PlanetBase):
     temperature: Optional[float]
     civilization: Optional[str] = "None"  # Default = None
     demonym: Optional[str] = "None"  # Default = None
+    discoverer: Optional[str] = "None"
 
 class Moon(BaseModel):
     name: str
