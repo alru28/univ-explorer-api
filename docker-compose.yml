@@ -11,6 +11,7 @@ services:
     environment:
       - COLLECTION_SERVICE_URL=http://collection-service:8000
       - AUTH_SERVICE_URL=http://auth-service:3000
+      - EXPLORATION_SERVICE_URL=http://exploration-service:8000
     networks:
       - univ-network
 
@@ -44,6 +45,23 @@ services:
     volumes:
       - postgres_data:/var/lib/postgresql/data
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  ollama:
+    image: ollama/ollama
+    #ports:               # Theoretically not needed
+    #  - "11434:11434"
+    networks:
+      - univ-network
+
+  exploration-service:
+    build:
+      context: ./exploration-service
+    environment:
+      OLLAMA_URL: http://ollama:11434
+    depends_on:
+      - ollama
+    networks:
+      - univ-network
 
 volumes:
   postgres_data:
