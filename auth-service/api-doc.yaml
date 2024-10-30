@@ -5,7 +5,7 @@ info:
   version: 1.0.0
 
 paths:
-  /user/register:
+  /register:
     post:
       summary: Register a new user
       description: Register a new user by providing a username and password. The password will be hashed before storing.
@@ -31,7 +31,7 @@ paths:
         '400':
           description: Invalid input data
 
-  /user/login:
+  /login:
     post:
       summary: User login
       description: Authenticate a user by verifying the username and password, and return a JWT token if successful.

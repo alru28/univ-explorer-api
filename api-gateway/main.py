@@ -5,6 +5,7 @@ import os
 # MICROSERVICES
 COLLECTION_SERVICE_URL = os.getenv("COLLECTION_SERVICE_URL", "http://collection-service:8000")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://auth-service:3000")
+
 app = FastAPI(title="UnivExplorer API", openapi_url="/openapi.json")
 
 # HTTP Client

@@ -3,31 +3,55 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
-// DB Initialization
-let db;
+const secret = process.env.JWT_SECRET || 'secret';
+
+router.post('/test', async (req, res) => {
+    console.log("Hello")
+});
 
 // Register user
 router.post('/register', async (req, res) => {
-    // ADD CONDITIONS TO CHECK IF IS REGISTERED
-    const { username, password } = req.body;
-    const hashedPassword = await bcrypt.hash(password, 10);
+    const { username, email, password } = req.body;
 
-    const user = { username, password: hashedPassword };
-    // INSERT USER INTO DB
+    try {
+        // User exists ?
+        const existingUser = await req.pool.query('SELECT * FROM users WHERE username = $1 OR email = $2', [username, email]);
+        if (existingUser.rows.length > 0) {
+            return res.status(400).send('User already exists');
+        }
 
-    res.status(201).send('User registered successfully');
+        // Hash and save
+        const hashedPassword = await bcrypt.hash(password, 10);
+        await req.pool.query(
+            'INSERT INTO users (username, email, password) VALUES ($1, $2, $3)',
+            [username, email, hashedPassword]
+        );
+
+        res.status(201).send('User registered successfully');
+
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
+    }
 });
 
 // Login user
 router.post('/login', async (req, res) => {
     const { username, password } = req.body;
-    const user = 0; // FIND USER IN DB
 
-    if (user && await bcrypt.compare(password, user.password)) {
-        const token = jwt.sign({ username: user.username }, 'secret');
-        res.json({ token });
-    } else {
-        res.status(400).send('Invalid credentials');
+    try {
+        const userResult = await req.pool.query('SELECT * FROM users WHERE username = $1', [username]);
+        const user = userResult.rows[0];
+
+        if (user && await bcrypt.compare(password, user.password)) {
+            const token = jwt.sign({ username: user.username, email: user.email }, secret, { expiresIn: '2h' });
+            res.json({ token });
+        } else {
+            res.status(400).send('Invalid credentials');
+        }
+    } catch (error) {
+        console.error(error);
+        res.status(500).send('Server error');
     }
 });
 
