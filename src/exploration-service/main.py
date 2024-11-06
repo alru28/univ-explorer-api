@@ -4,6 +4,8 @@ from typing import List, Optional
 from bson import ObjectId
 from pymongo import MongoClient
 import os
+import requests
+import json
 
 # GLOBAL
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongo_user:mongo_pass@mongodb:27017/exploration_db")
@@ -40,6 +42,29 @@ class PlanetDetail(PlanetBase):
         # Allows `_id` to be populated by MongoDB
         populate_by_name = True
         json_encoders = {ObjectId: str}
+          
+        
+# Function to check if Ollama model is available and pull if necessary
+def check_and_pull_model():
+    try:
+        response = requests.get(f"{OLLAMA_URL}/api/tags")
+        if response.status_code == 200:
+            models = response.json().get("models", [])
+            if "llama3.2" not in models:
+                pull_response = requests.post(f"{OLLAMA_URL}/api/pull", json={"name": "llama3.2"})
+                if pull_response.status_code != 200:
+                    raise Exception("Failed to pull llama3.2 model")
+        else:
+            raise Exception("Failed to retrieve models from Ollama")
+    except Exception as e:
+        raise HTTPException(status_code=500, detail=str(e))
+
+# FastAPI Startup Event
+@app.on_event("startup")
+async def startup_event():
+    check_and_pull_model()
+    
+    
 
 # FastAPI Routes
 
@@ -60,6 +85,42 @@ async def create_planet(planet: PlanetDetail):
     planet_data = planet.dict(by_alias=True)  # Use alias to keep `_id`
     result = planet_collection.insert_one(planet_data)
     planet_data["_id"] = result.inserted_id
+    return PlanetDetail(**planet_data)
+
+@app.post("/explore", response_model=PlanetDetail)
+async def explore():
+    # Define the prompt for the LLM
+    prompt = (
+        "You are an AI tasked with creating a fictional planet for exploration purposes. "
+        "Provide the following details in JSON format: name, color_base, color_extra, mass, radius, "
+        "diameter, gravity, temperature, civilization, main_event, demonym, and discoverer. "
+        "Ensure that the response can be directly parsed into a JSON object."
+    )
+
+    # Make a request to the Ollama container
+    response = requests.post(
+        f"{OLLAMA_URL}/api/generate",
+        json={"model": "llama3.2", "prompt": prompt, "format": "json"},
+        headers={"Content-Type": "application/json"}
+    )
+
+    if response.status_code != 200:
+        raise HTTPException(status_code=500, detail="Failed to generate planet data")
+
+    # Parse the response from Ollama
+    try:
+        planet_data = response.json()
+    except json.JSONDecodeError:
+        raise HTTPException(status_code=500, detail="Invalid response from LLM")
+
+    # Create a PlanetDetail object from the LLM response
+    planet = PlanetDetail(**planet_data)
+
+    # Store the planet in MongoDB
+    planet_data = planet.dict(by_alias=True)
+    result = planet_collection.insert_one(planet_data)
+    planet_data["_id"] = result.inserted_id
+
     return PlanetDetail(**planet_data)
 
 # DEBUG
