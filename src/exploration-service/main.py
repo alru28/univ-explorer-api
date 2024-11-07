@@ -53,14 +53,29 @@ def check_and_pull_model():
         response = requests.get(f"{OLLAMA_URL}/api/tags")
         if response.status_code == 200:
             models = response.json().get("models", [])
-            if "llama3.2" not in models:
-                pull_response = requests.post(f"{OLLAMA_URL}/api/pull", json={"name": "llama3.2"})
+            if "gemma2:2b-instruct-q4_K_M" not in models:
+                pull_response = requests.post(f"{OLLAMA_URL}/api/pull", json={"name": "gemma2:2b-instruct-q4_K_M"})
                 if pull_response.status_code != 200:
-                    raise Exception("Failed to pull llama3.2 model")
+                    raise Exception("Failed to pull gemma2 model")
         else:
             raise Exception("Failed to retrieve models from Ollama")
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
+
+
+# Helper functions for randomization of the generated planets
+def select_adjective():
+    adjectives = [
+        "mystical", "ancient", "futuristic", "exotic", "celestial", "enigmatic",
+        "ethereal", "serene", "volatile", "luminous", "magnificent", "mysterious",
+        "vibrant", "serene", "dazzling", "radiant", "majestic", "primordial",
+        "nebulous", "glorious", "splendid", "ethereal", "transient", "timeless",
+        "distant", "hidden", "hidden", "sacred", "ancient", "distant", "forgotten",
+        "unseen", "hidden", "mysterious", "legendary", "mythical", "arcane",
+        "mystic", "enchanting", "bewildering", "captivating", "alluring", "charming",
+        "enigmatic", "puzzling", "intriguing", "fascinating", "enveloping", "shrouded"
+    ]
+    return random.choice(adjectives), random.choice(adjectives)
 
 # FastAPI Startup Event
 @app.on_event("startup")
@@ -110,35 +125,34 @@ async def create_planet(planet: PlanetDetail):
 @app.post("/explore", response_model=PlanetDetail)
 async def explore():
     
-    adjectives = ["mystical", "ancient", "futuristic", "exotic", "celestial", "enigmatic"]
-    random_adjective = random.choice(adjectives)
+    adj_1, adj_2 = select_adjective()
 
     seed_value = random.randint(1, 1000000)
     
     prompt = (
-        f"You are an AI tasked with creating a {random_adjective} and unique fictional planet for exploration purposes. "
+        f"You are an AI tasked with creating a {adj_1} and {adj_2} planet for exploration purposes. "
         f"Seed value: {seed_value}. Each generated planet should be distinct, with attributes that vary significantly from previous ones. "
         "Provide the following details in JSON format: name (make it unique and imaginative), color_base (a unique hex color code), color_extra (another unique hex color code different from color_base), mass (a random value in kg), radius (a random value in km), diameter (a random value in km), gravity (a random value in m/s^2), temperature (a random value in Celsius), civilization (a distinct type of civilization, such as advanced aliens or prehistoric beings), main_event (an interesting historical or scientific event unique to the planet), demonym (a unique name for inhabitants), and discoverer (a fictional unique name for the discoverer). "
         "Don't include the units in the numeric variables (mass, radius, diameter, gravity, temperature), just the numbers. Provide only text in the text variables (name, civilization, main_event, demonym, discoverer). Don't use scientific notation, put the whole number. "
+        "Make sure that the different parameters make sense between them, such as the gravity with the mass or the name with the civilization or denonym."
         "Ensure that the response can be directly parsed into a JSON object, and the response only contains that JSON, nothing else. Provide it in exactly and strictly this format without new lines, filling in the X: "
         "{\"name\":\"X\", \"color_base\":\"X\", \"color_extra\":\"X\", \"mass\":\"X\", \"radius\":\"X\", \"diameter\":\"X\", \"gravity\":\"X\", \"temperature\":\"X\", \"civilization\":\"X\", \"main_event\":\"X\", \"demonym\":\"X\", \"discoverer\":\"X\"}"
     )
 
-    # Make a request to the Ollama container
+    # Request to container
     response = requests.post(
         f"{OLLAMA_URL}/api/generate",
-        json={"model": "llama3.2", "prompt": prompt, "format": "json", "stream": False, "options": {
-            "seed": seed_value, "temperature":1.2}},
+        json={"model": "gemma2:2b-instruct-q4_K_M", "prompt": prompt, "format": "json", "stream": False, "options": {
+            "seed": seed_value, "temperature":2}},
         headers={"Content-Type": "application/json"}
     )
-    
+
     print("Status code:", response.status_code)
-    print("Response text:", response.text)  # To see the raw response
+    print("Response text:", response.text)
 
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Failed to generate planet data")
 
-    # Parse the response from Ollama
     try:
         json_data = json.loads(response.text)
         
