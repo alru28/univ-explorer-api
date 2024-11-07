@@ -1,9 +1,12 @@
 from fastapi import FastAPI, HTTPException
 from pydantic import BaseModel, Field
-from typing import List, Optional
 from bson import ObjectId
+from bson.errors import InvalidId
 from pymongo import MongoClient
+
+from typing import List, Optional
 import os
+import random
 import requests
 import json
 
@@ -68,11 +71,28 @@ async def startup_event():
 
 # FastAPI Routes
 
+@app.get("/planets/all", response_model=List[PlanetDetail])
+async def get_all_planets():
+    planets = list(planet_collection.find())
+    return [PlanetDetail(**planet) for planet in planets]
+
 @app.get("/planets/{planet_id}", response_model=PlanetDetail)
 async def get_planet(planet_id: str):
-    planet = planet_collection.find_one({"_id": ObjectId(planet_id)})
+    try:
+        object_id = ObjectId(planet_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Invalid planet ID format")
+
+    # Debugging print
+    print(f"Querying planet with ID: {object_id}")
+    
+    planet = planet_collection.find_one({"_id": planet_id})
     if not planet:
         raise HTTPException(status_code=404, detail="Planet not found")
+    
+    # Debugging print to verify the found document
+    print(f"Found planet: {planet}")
+    
     return PlanetDetail(**planet)
 
 @app.get("/latest", response_model=List[PlanetBase])
@@ -89,27 +109,44 @@ async def create_planet(planet: PlanetDetail):
 
 @app.post("/explore", response_model=PlanetDetail)
 async def explore():
-    # Define the prompt for the LLM
+    
+    adjectives = ["mystical", "ancient", "futuristic", "exotic", "celestial", "enigmatic"]
+    random_adjective = random.choice(adjectives)
+
+    seed_value = random.randint(1, 1000000)
+    
     prompt = (
-        "You are an AI tasked with creating a fictional planet for exploration purposes. "
-        "Provide the following details in JSON format: name, color_base, color_extra, mass, radius, "
-        "diameter, gravity, temperature, civilization, main_event, demonym, and discoverer. "
-        "Ensure that the response can be directly parsed into a JSON object."
+        f"You are an AI tasked with creating a {random_adjective} and unique fictional planet for exploration purposes. "
+        f"Seed value: {seed_value}. Each generated planet should be distinct, with attributes that vary significantly from previous ones. "
+        "Provide the following details in JSON format: name (make it unique and imaginative), color_base (a unique hex color code), color_extra (another unique hex color code different from color_base), mass (a random value in kg), radius (a random value in km), diameter (a random value in km), gravity (a random value in m/s^2), temperature (a random value in Celsius), civilization (a distinct type of civilization, such as advanced aliens or prehistoric beings), main_event (an interesting historical or scientific event unique to the planet), demonym (a unique name for inhabitants), and discoverer (a fictional unique name for the discoverer). "
+        "Don't include the units in the numeric variables (mass, radius, diameter, gravity, temperature), just the numbers. Provide only text in the text variables (name, civilization, main_event, demonym, discoverer). Don't use scientific notation, put the whole number. "
+        "Ensure that the response can be directly parsed into a JSON object, and the response only contains that JSON, nothing else. Provide it in exactly and strictly this format without new lines, filling in the X: "
+        "{\"name\":\"X\", \"color_base\":\"X\", \"color_extra\":\"X\", \"mass\":\"X\", \"radius\":\"X\", \"diameter\":\"X\", \"gravity\":\"X\", \"temperature\":\"X\", \"civilization\":\"X\", \"main_event\":\"X\", \"demonym\":\"X\", \"discoverer\":\"X\"}"
     )
 
     # Make a request to the Ollama container
     response = requests.post(
         f"{OLLAMA_URL}/api/generate",
-        json={"model": "llama3.2", "prompt": prompt, "format": "json"},
+        json={"model": "llama3.2", "prompt": prompt, "format": "json", "stream": False, "options": {
+            "seed": seed_value, "temperature":1.2}},
         headers={"Content-Type": "application/json"}
     )
+    
+    print("Status code:", response.status_code)
+    print("Response text:", response.text)  # To see the raw response
 
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Failed to generate planet data")
 
     # Parse the response from Ollama
     try:
-        planet_data = response.json()
+        json_data = json.loads(response.text)
+        
+        print("JSON Data: ", json_data)
+        
+        planet_data = json.loads(json_data['response'])
+        
+        print("Planet Data: ", planet_data)
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Invalid response from LLM")
 
@@ -120,6 +157,8 @@ async def explore():
     planet_data = planet.dict(by_alias=True)
     result = planet_collection.insert_one(planet_data)
     planet_data["_id"] = result.inserted_id
+    
+    print(f"Inserted planet ID: {result.inserted_id}")
 
     return PlanetDetail(**planet_data)
 

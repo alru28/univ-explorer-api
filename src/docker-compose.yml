@@ -64,6 +64,8 @@ services:
     environment:
       MONGO_INITDB_ROOT_USERNAME: mongo_user
       MONGO_INITDB_ROOT_PASSWORD: mongo_pass
+    # ports:  DEBUGGING WITH MONGOSH
+    #   - "27017:27017"
     networks:
       - univ-network
     volumes:
