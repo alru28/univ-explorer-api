@@ -97,16 +97,10 @@ async def get_planet(planet_id: str):
         object_id = ObjectId(planet_id)
     except InvalidId:
         raise HTTPException(status_code=400, detail="Invalid planet ID format")
-
-    # Debugging print
-    print(f"Querying planet with ID: {object_id}")
     
     planet = planet_collection.find_one({"_id": planet_id})
     if not planet:
-        raise HTTPException(status_code=404, detail="Planet not found")
-    
-    # Debugging print to verify the found document
-    print(f"Found planet: {planet}")
+        raise HTTPException(status_code=404, detail="Planet not found")    
     
     return PlanetDetail(**planet)
 
@@ -147,9 +141,6 @@ async def explore():
         headers={"Content-Type": "application/json"}
     )
 
-    print("Status code:", response.status_code)
-    print("Response text:", response.text)
-
     if response.status_code != 200:
         raise HTTPException(status_code=500, detail="Failed to generate planet data")
 
@@ -171,8 +162,6 @@ async def explore():
     planet_data = planet.dict(by_alias=True)
     result = planet_collection.insert_one(planet_data)
     planet_data["_id"] = result.inserted_id
-    
-    print(f"Inserted planet ID: {result.inserted_id}")
 
     return PlanetDetail(**planet_data)
 
