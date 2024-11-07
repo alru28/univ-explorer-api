@@ -53,8 +53,8 @@ async def auth_service_proxy(path: str, request: Request):
     target_url = f"{AUTH_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
-@app.api_route("/explore/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def exploration_service_proxy(path: str, request: Request):
+@app.api_route("/exploration/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+async def exploration_service_proxy(path: str, request: Request, token_verified: bool = Depends(verify_jwt)):
     target_url = f"{EXPLORATION_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
