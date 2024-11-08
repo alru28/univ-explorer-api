@@ -25,8 +25,8 @@ To set up UnivExplorer locally, follow these steps:
 
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/UnivExplorer.git
-   cd UnivExplorer
+   git clone https://github.com/alru28/univ-explorer-api.git
+   cd univ-explorer-api/src
    ```
 
 2. Launch the Docker containers:
