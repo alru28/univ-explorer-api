@@ -39,12 +39,13 @@ async def proxy_request(request: Request, target_url: str, headers=None):
 
     headers = headers or dict(request.headers)
 
-    async with httpx.AsyncClient() as client:
+    async with httpx.AsyncClient(timeout=60.0) as client:
         try:
+            
             response = await client.request(method, target_url, headers=headers, content=content)
             return Response(content=response.content, status_code=response.status_code, headers=response.headers)
         except httpx.HTTPError as exc:
-            raise HTTPException(status_code=500, detail=str(exc))
+            raise HTTPException(status_code=500, detail=f"Gateway error: {str(exc)}")
 
 
 # GATEWAY APP
