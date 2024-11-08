@@ -19,17 +19,25 @@ async def verify_jwt(request: Request):
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{AUTH_SERVICE_URL}/verify", headers={"Authorization": token})
+
             if response.status_code != 200:
                 raise HTTPException(status_code=401, detail="Invalid token")
+            
+            user_info = response.json().get("user")
+            if not user_info or "username" not in user_info:
+                raise HTTPException(status_code=401, detail="Invalid user info")
+            return user_info["username"]  # Return the username
+        
         except httpx.HTTPError as exc:
             raise HTTPException(status_code=500, detail="Authentication service error")
 
 # Proxy
-async def proxy_request(request: Request, target_url: str):
+async def proxy_request(request: Request, target_url: str, headers=None):
     method = request.method
     print(target_url)
-    headers = dict(request.headers)
     content = await request.body()
+
+    headers = headers or dict(request.headers)
 
     async with httpx.AsyncClient() as client:
         try:
@@ -44,7 +52,7 @@ async def proxy_request(request: Request, target_url: str):
 app = FastAPI(title="UnivExplorer API", openapi_url="/openapi.json")
 
 @app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def collection_service_proxy(path: str, request: Request, token_verified: bool = Depends(verify_jwt)):
+async def collection_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):
     target_url = f"{COLLECTION_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
@@ -54,9 +62,14 @@ async def auth_service_proxy(path: str, request: Request):
     return await proxy_request(request, target_url)
 
 @app.api_route("/exploration/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
-async def exploration_service_proxy(path: str, request: Request, token_verified: bool = Depends(verify_jwt)):
+async def exploration_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):
     target_url = f"{EXPLORATION_SERVICE_URL}/{path}".lstrip("/")
-    return await proxy_request(request, target_url)
+
+    # Custom header for username
+    headers = dict(request.headers)
+    headers["X-Username"] = token_verified  # Use custom header to pass the username
+
+    return await proxy_request(request, target_url, headers=headers)
 
 if __name__ == "__main__":
     import uvicorn
