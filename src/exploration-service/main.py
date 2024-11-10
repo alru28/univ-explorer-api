@@ -166,7 +166,6 @@ async def explore(username: Optional[str] = Header(None, alias="X-Username")):
     
     planet_data['username'] = username
 
-    # Create a PlanetDetail object from the LLM response
     planet = PlanetDetail(**planet_data)
 
     # Store the planet in MongoDB
