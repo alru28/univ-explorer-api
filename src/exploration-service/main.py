@@ -33,7 +33,6 @@ class PlanetDetail(PlanetBase):
     id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")  # MongoDB-compatible ID
     mass: Optional[float] = None
     radius: Optional[float] = None
-    diameter: Optional[float] = None
     gravity: Optional[float] = None
     temperature: Optional[float] = None
     civilization: Optional[str] = "None"
@@ -134,12 +133,12 @@ async def explore(username: Optional[str] = Header(None, alias="X-Username")):
     
     prompt = (
         f"You are an AI tasked with creating a {adj_1} and {adj_2} planet for exploration purposes. "
-        f"Seed value: {seed_value}. Each generated planet should be distinct, with attributes that vary significantly from previous ones. "
-        "Provide the following details in JSON format: name (make it unique and imaginative), color_base (a unique hex color code), color_extra (another unique hex color code different from color_base), mass (a random value in kg), radius (a random value in km), diameter (a random value in km), gravity (a random value in m/s^2), temperature (a random value in Celsius), civilization (a distinct type of civilization, such as advanced aliens or prehistoric beings), main_event (an interesting historical or scientific event unique to the planet), demonym (a unique name for inhabitants), and representative (a fictional unique name for the representative). "
-        "Don't include the units in the numeric variables (mass, radius, diameter, gravity, temperature), just the numbers. Provide only text in the text variables (name, civilization, main_event, demonym, representative). Don't use scientific notation, put the whole number. "
+        f"Seed value: {seed_value}. Each generated planet should be distinct, with attributes that vary significantly based on the previous seed I sent you and the adjectives of the planet. "
+        "Provide the following details in JSON format: name (make it unique and imaginative), color_base (a unique hex color code), color_extra (another unique hex color code different from color_base), mass (a random value in kg), radius (a random value in km), gravity (a random value in m/s^2), temperature (a random value in Celsius), civilization (a distinct type of civilization, such as advanced aliens or prehistoric beings), main_event (the whole description in 100 words of an interesting historical or scientific event unique to the planet), demonym (a unique name for inhabitants), and representative (a fictional unique name for the representative). "
+        "Don't include the units in the numeric variables (mass, radius, gravity, temperature), just the numbers. Provide only text in the text variables (name, civilization, main_event, demonym, representative). Don't use scientific notation, put the whole number. "
         "Make sure that the different parameters make sense between them, such as the gravity with the mass or the name with the civilization or denonym."
         "Ensure that the response can be directly parsed into a JSON object, and the response only contains that JSON, nothing else. Provide it in exactly and strictly this format without new lines, filling in the X: "
-        "{\"name\":\"X\", \"color_base\":\"X\", \"color_extra\":\"X\", \"mass\":\"X\", \"radius\":\"X\", \"diameter\":\"X\", \"gravity\":\"X\", \"temperature\":\"X\", \"civilization\":\"X\", \"main_event\":\"X\", \"demonym\":\"X\", \"representative\":\"X\"}"
+        "{\"name\":\"X\", \"color_base\":\"X\", \"color_extra\":\"X\", \"mass\":\"X\", \"radius\":\"X\", \"gravity\":\"X\", \"temperature\":\"X\", \"civilization\":\"X\", \"main_event\":\"X\", \"demonym\":\"X\", \"representative\":\"X\"}"
     )
 
     # Request to container
