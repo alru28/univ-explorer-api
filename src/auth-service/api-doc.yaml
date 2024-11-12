@@ -8,7 +8,7 @@ paths:
   /register:
     post:
       summary: Register a new user
-      description: Register a new user by providing a username and password. The password will be hashed before storing.
+      description: Register a new user by providing a username, an email and password. The password will be hashed before storing.
       requestBody:
         required: true
         content:
@@ -19,12 +19,16 @@ paths:
                 username:
                   type: string
                   example: johndoe
+                email:
+                  type: string
+                  example: mail@mail.com
                 password:
                   type: string
                   example: P@ssw0rd
               required:
                 - username
                 - password
+                - email
       responses:
         '201':
           description: User registered successfully

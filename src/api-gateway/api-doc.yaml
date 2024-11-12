@@ -1,0 +1,388 @@
+openapi: 3.0.0
+info:
+  title: Univ Explorer API Gateway
+  description: API Gateway that aggregates routes from multiple microservices.
+  version: 1.0.0
+servers:
+  - url: http://localhost:8080
+paths:
+  /auth/test:
+    get:
+      summary: Test Auth Service
+      description: Test endpoint to verify Auth service functionality.
+      responses:
+        "200":
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+
+  /auth/register:
+    post:
+      summary: Register a new user
+      description: Register a new user with username, email, and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                email:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - email
+                - password
+      responses:
+        "201":
+          description: User registered successfully
+        "400":
+          description: User already exists or missing fields
+        "500":
+          description: Server error
+
+  /auth/login:
+    post:
+      summary: User login
+      description: Log in a user with username and password.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                username:
+                  type: string
+                password:
+                  type: string
+              required:
+                - username
+                - password
+      responses:
+        "200":
+          description: Token returned upon successful login
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  token:
+                    type: string
+        "400":
+          description: Invalid credentials or missing fields
+        "500":
+          description: Server error
+
+  /auth/verify:
+    get:
+      summary: Verify JWT Token
+      description: Verify the JWT token from the Authorization header.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Token is valid
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  message:
+                    type: string
+                  user:
+                    type: object
+                    properties:
+                      username:
+                        type: string
+                      email:
+                        type: string
+        "401":
+          description: Invalid or missing token
+
+  /collection/planets:
+    get:
+      summary: Get all planets
+      description: Retrieve a list of planets with basic information.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: A list of planets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    distanceFromEarth:
+                      type: number
+                      format: float
+        "500":
+          description: Server error
+
+  /collection/planets/{planet_name}:
+    get:
+      summary: Get planet details
+      description: Retrieve detailed information about a specific planet.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: planet_name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Planet details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  type:
+                    type: string
+                    default: Planet
+                  mass:
+                    type: number
+                  radius:
+                    type: number
+                  diameter:
+                    type: number
+                  gravity:
+                    type: number
+                  temperature:
+                    type: number
+                  civilization:
+                    type: string
+                  demonym:
+                    type: string
+                  discoverer:
+                    type: string
+        "400":
+          description: Invalid planet name
+        "500":
+          description: Server error
+
+  /collection/planets/{planet_name}/moons:
+    get:
+      summary: Get moons of a planet
+      description: Retrieve a list of moons for a specific planet.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: planet_name
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of moons
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    discoverer:
+                      type: string
+        "400":
+          description: Invalid planet name
+        "500":
+          description: Server error
+
+  /exploration/planets/all:
+    get:
+      summary: Get all explored planets
+      description: Retrieve all explored planets from the exploration database.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: A list of explored planets
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    color_base:
+                      type: string
+                    color_extra:
+                      type: string
+                    image_url:
+                      type: string
+        "500":
+          description: Server error
+
+  /exploration/planets/{planet_id}:
+    get:
+      summary: Get a planet by ID
+      description: Retrieve details of an explored planet by its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: planet_id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: Planet details
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  color_base:
+                    type: string
+                  color_extra:
+                    type: string
+                  mass:
+                    type: number
+                  radius:
+                    type: number
+                  gravity:
+                    type: number
+                  temperature:
+                    type: number
+                  civilization:
+                    type: string
+                  main_event:
+                    type: string
+                  demonym:
+                    type: string
+                  representative:
+                    type: string
+        "400":
+          description: Invalid planet ID format
+        "404":
+          description: Planet not found
+        "500":
+          description: Server error
+
+  /exploration/planets/user/{username}:
+    get:
+      summary: Get planets explored by a user
+      description: Retrieve all planets explored by a specific user.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: username
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          description: A list of planets explored by the user
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    color_base:
+                      type: string
+                    color_extra:
+                      type: string
+                    mass:
+                      type: number
+                    radius:
+                      type: number
+                    gravity:
+                      type: number
+                    temperature:
+                      type: number
+                    civilization:
+                      type: string
+                    main_event:
+                      type: string
+                    demonym:
+                      type: string
+                    representative:
+                      type: string
+        "404":
+          description: No planets found for this user
+        "500":
+          description: Server error
+
+  /exploration/explore:
+    post:
+      summary: Generate a new planet for exploration
+      description: Generate a unique planet based on the user's exploration preferences.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: header
+          name: X-Username
+          required: false
+          schema:
+            type: string
+      responses:
+        "200":
+          description: New planet generated
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                  color_base:
+                    type: string
+                  color_extra:
+                    type: string
+                  mass:
+                    type: number
+                  radius:
+                    type: number
+                  gravity:
+                    type: number
+                  temperature:
+                    type: number
+                  civilization:
+                    type: string
+                  main_event:
+                    type: string
+                  demonym:
+                    type: string
+                  representative:
+                    type: string
+        "500":
+          description: Error generating planet
+
+components:
+  securitySchemes:
+    bearerAuth:
+      type: http
+      scheme: bearer
+      bearerFormat: JWT

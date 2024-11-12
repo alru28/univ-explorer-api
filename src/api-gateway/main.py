@@ -1,4 +1,8 @@
 from fastapi import FastAPI, Request, HTTPException, Response, Depends
+from fastapi.openapi.docs import get_swagger_ui_html
+
+
+import yaml
 import httpx
 import os
 
@@ -47,22 +51,20 @@ async def proxy_request(request: Request, target_url: str, headers=None):
         except httpx.HTTPError as exc:
             raise HTTPException(status_code=500, detail=f"Gateway error: {str(exc)}")
 
-
 # GATEWAY APP
+app = FastAPI(title="UnivExplorer API", openapi_url = None)
 
-app = FastAPI(title="UnivExplorer API", openapi_url="/openapi.json")
-
-@app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], include_in_schema=False)
 async def collection_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):
     target_url = f"{COLLECTION_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
-@app.api_route("/user/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/auth/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], include_in_schema=False)
 async def auth_service_proxy(path: str, request: Request):
     target_url = f"{AUTH_SERVICE_URL}/{path}".lstrip("/")
     return await proxy_request(request, target_url)
 
-@app.api_route("/exploration/{path:path}", methods=["GET", "POST", "PUT", "DELETE"])
+@app.api_route("/exploration/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], include_in_schema=False)
 async def exploration_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):
     target_url = f"{EXPLORATION_SERVICE_URL}/{path}".lstrip("/")
 
@@ -71,6 +73,18 @@ async def exploration_service_proxy(path: str, request: Request, token_verified:
     headers["X-Username"] = token_verified  # Use custom header to pass the username
 
     return await proxy_request(request, target_url, headers=headers)
+
+# CUSTOM DOCS
+with open("api-doc.yaml", "r") as file:
+    openapi_spec = yaml.safe_load(file)
+
+@app.get("/api-doc.yaml", include_in_schema=False)
+async def get_openapi_yaml():
+    return Response(content=yaml.dump(openapi_spec), media_type="application/yaml")
+
+@app.get("/docs", include_in_schema=False)
+async def custom_docs():
+    return get_swagger_ui_html(openapi_url="/api-doc.yaml", title="Custom API Docs")
 
 if __name__ == "__main__":
     import uvicorn
