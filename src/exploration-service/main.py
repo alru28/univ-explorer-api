@@ -2,7 +2,7 @@ from fastapi import FastAPI, HTTPException, Header
 from pydantic import BaseModel, Field
 from bson import ObjectId
 from bson.errors import InvalidId
-from pymongo import MongoClient
+from pymongo import MongoClient, ReturnDocument
 
 from typing import List, Optional
 import os
@@ -89,6 +89,8 @@ async def startup_event():
 @app.get("/planets/all", response_model=List[PlanetDetail])
 async def get_all_planets():
     planets = list(planet_collection.find())
+    if not planets:
+        raise HTTPException(status_code=404, detail="No planets found")
     return [PlanetDetail(**planet) for planet in planets]
 
 @app.get("/planets/{planet_id}", response_model=PlanetDetail)
@@ -116,15 +118,29 @@ async def get_planets_by_user(username: str):
         raise HTTPException(status_code=404, detail="No planets found for this user")
     return [PlanetDetail(**planet) for planet in planets]
 
+@app.put("/planets/{planet_id}", response_model=PlanetDetail)
+async def update_planet(planet_id: str, planet: PlanetDetail):
+    try:
+        object_id = ObjectId(planet_id)
+    except InvalidId:
+        raise HTTPException(status_code=400, detail="Invalid planet ID format")
 
-@app.post("/planets/", response_model=PlanetDetail)
-async def create_planet(planet: PlanetDetail):
-    planet_data = planet.dict(by_alias=True)  # Use alias to keep `_id`
-    result = planet_collection.insert_one(planet_data)
-    planet_data["_id"] = result.inserted_id
-    return PlanetDetail(**planet_data)
+    # Get id out to avoid error
+    planet_data = {k: v for k, v in planet.dict(by_alias=True).items() if v is not None and k != "_id"}
+    
 
-@app.post("/explore", response_model=PlanetDetail)
+    result = planet_collection.find_one_and_update(
+        {"_id": planet_id},
+        {"$set": planet_data},
+        return_document=ReturnDocument.AFTER
+    )
+
+    if not result:
+        raise HTTPException(status_code=404, detail="Planet not found")
+
+    return PlanetDetail(**result)
+
+@app.post("/explore", response_model=PlanetDetail, status_code=201)
 async def explore(username: Optional[str] = Header(None, alias="X-Username")):
     
     adj_1, adj_2 = select_adjective()

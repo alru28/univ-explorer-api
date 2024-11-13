@@ -8,6 +8,7 @@ servers:
 paths:
   /auth/test:
     get:
+      tags: ["Auth Service"]
       summary: Test Auth Service
       description: Test endpoint to verify Auth service functionality.
       responses:
@@ -23,6 +24,7 @@ paths:
 
   /auth/register:
     post:
+      tags: ["Auth Service"]
       summary: Register a new user
       description: Register a new user with username, email, and password.
       requestBody:
@@ -52,6 +54,7 @@ paths:
 
   /auth/login:
     post:
+      tags: ["Auth Service"]
       summary: User login
       description: Log in a user with username and password.
       requestBody:
@@ -85,6 +88,7 @@ paths:
 
   /auth/verify:
     get:
+      tags: ["Auth Service"]
       summary: Verify JWT Token
       description: Verify the JWT token from the Authorization header.
       security:
@@ -111,6 +115,7 @@ paths:
 
   /collection/planets:
     get:
+      tags: ["Collection Service"]
       summary: Get all planets
       description: Retrieve a list of planets with basic information.
       security:
@@ -135,6 +140,7 @@ paths:
 
   /collection/planets/{planet_name}:
     get:
+      tags: ["Collection Service"]
       summary: Get planet details
       description: Retrieve detailed information about a specific planet.
       security:
@@ -181,6 +187,7 @@ paths:
 
   /collection/planets/{planet_name}/moons:
     get:
+      tags: ["Collection Service"]
       summary: Get moons of a planet
       description: Retrieve a list of moons for a specific planet.
       security:
@@ -212,6 +219,7 @@ paths:
 
   /exploration/planets/all:
     get:
+      tags: ["Exploration Service"]
       summary: Get all explored planets
       description: Retrieve all explored planets from the exploration database.
       security:
@@ -239,6 +247,7 @@ paths:
 
   /exploration/planets/{planet_id}:
     get:
+      tags: ["Exploration Service"]
       summary: Get a planet by ID
       description: Retrieve details of an explored planet by its ID.
       security:
@@ -249,9 +258,117 @@ paths:
           required: true
           schema:
             type: string
+          description: The unique ID of the planet to retrieve
       responses:
         "200":
-          description: Planet details
+          description: Planet details retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  name:
+                    type: string
+                    description: The name of the planet
+                  color_base:
+                    type: string
+                    description: Primary color of the planet in hex format
+                  color_extra:
+                    type: string
+                    description: Secondary color of the planet in hex format
+                  image_url:
+                    type: string
+                    description: URL to an image of the planet (if available)
+                  mass:
+                    type: number
+                    description: Mass of the planet in kg
+                  radius:
+                    type: number
+                    description: Radius of the planet in km
+                  gravity:
+                    type: number
+                    description: Gravity of the planet in m/s²
+                  temperature:
+                    type: number
+                    description: Average temperature on the planet in Celsius
+                  civilization:
+                    type: string
+                    description: Type of civilization on the planet
+                  main_event:
+                    type: string
+                    description: Notable historical or scientific event on the planet
+                  demonym:
+                    type: string
+                    description: Name for inhabitants of the planet
+                  representative:
+                    type: string
+                    description: Name of a fictional representative of the planet
+                  username:
+                    type: string
+                    description: The username of the person who explored or added the planet
+        "400":
+          description: Invalid planet ID format
+        "404":
+          description: Planet not found
+        "500":
+          description: Server error
+
+    put:
+      tags: ["Exploration Service"]
+      summary: Update an existing explored planet
+      description: Update the details of an existing planet in the exploration database using its ID.
+      security:
+        - bearerAuth: []
+      parameters:
+        - in: path
+          name: planet_id
+          required: true
+          schema:
+            type: string
+          description: The ID of the planet to update
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                name:
+                  type: string
+                  description: The name of the planet
+                color_base:
+                  type: string
+                  description: Primary color of the planet in hex format
+                color_extra:
+                  type: string
+                  description: Secondary color of the planet in hex format
+                mass:
+                  type: number
+                  description: Mass of the planet in kg
+                radius:
+                  type: number
+                  description: Radius of the planet in km
+                gravity:
+                  type: number
+                  description: Gravity of the planet in m/s²
+                temperature:
+                  type: number
+                  description: Average temperature on the planet in Celsius
+                civilization:
+                  type: string
+                  description: Type of civilization on the planet
+                main_event:
+                  type: string
+                  description: Notable historical or scientific event on the planet
+                demonym:
+                  type: string
+                  description: Name for inhabitants of the planet
+                representative:
+                  type: string
+                  description: Name of a fictional representative of the planet
+      responses:
+        "200":
+          description: Planet updated successfully
           content:
             application/json:
               schema:
@@ -284,10 +401,11 @@ paths:
         "404":
           description: Planet not found
         "500":
-          description: Server error
+          description: Server error updating planet
 
   /exploration/planets/user/{username}:
     get:
+      tags: ["Exploration Service"]
       summary: Get planets explored by a user
       description: Retrieve all planets explored by a specific user.
       security:
@@ -337,6 +455,7 @@ paths:
 
   /exploration/explore:
     post:
+      tags: ["Exploration Service"]
       summary: Generate a new planet for exploration
       description: Generate a unique planet based on the user's exploration preferences.
       security:
@@ -379,6 +498,48 @@ paths:
                     type: string
         "500":
           description: Error generating planet
+
+  /exploration/latest:
+    get:
+      tags: ["Exploration Service"]
+      summary: Get latest explored planets
+      description: Retrieve the latest 3 explored planets.
+      security:
+        - bearerAuth: []
+      responses:
+        "200":
+          description: Latest planets retrieved successfully
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  type: object
+                  properties:
+                    name:
+                      type: string
+                    color_base:
+                      type: string
+                    color_extra:
+                      type: string
+                    mass:
+                      type: number
+                    radius:
+                      type: number
+                    gravity:
+                      type: number
+                    temperature:
+                      type: number
+                    civilization:
+                      type: string
+                    main_event:
+                      type: string
+                    demonym:
+                      type: string
+                    representative:
+                      type: string
+        "500":
+          description: Server error
 
 components:
   securitySchemes:
