@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/api';
+import {
+  Container,
+  Card,
+  CardBody,
+  CardTitle,
+  Form,
+  FormGroup,
+  Label,
+  Input,
+  Button,
+  Alert,
+} from 'reactstrap';
 
 function Login() {
   const [username, setUsername] = useState('');
@@ -16,10 +28,10 @@ function Login() {
       const response = await loginUser({ username, password });
       const token = response.data.token;
 
-      // Store token (e.g., in local storage)
+      // Store token (Local Storage for now ?????)
       localStorage.setItem('token', token);
 
-      // Redirect to a protected route or the profile page
+      // Redirect to profile
       navigate('/profile');
     } catch (err) {
       setError('Invalid username or password');
@@ -27,41 +39,45 @@ function Login() {
   };
 
   return (
-    <div className="container d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <div className="card p-4" style={{ width: '400px' }}>
-        <h2 className="text-center mb-4">Login</h2>
+    <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+      <Card style={{ width: '400px' }}>
+        <CardBody>
+          <CardTitle tag="h2" className="text-center mb-4">
+            Login
+          </CardTitle>
 
-        {error && <div className="alert alert-danger">{error}</div>}
+          {error && <Alert color="danger">{error}</Alert>}
 
-        <form onSubmit={handleLogin}>
-          <div className="mb-3">
-            <label htmlFor="username" className="form-label">Username</label>
-            <input
-              type="text"
-              id="username"
-              className="form-control"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-              required
-            />
-          </div>
+          <Form onSubmit={handleLogin}>
+            <FormGroup>
+              <Label for="username">Username</Label>
+              <Input
+                type="text"
+                id="username"
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+                required
+              />
+            </FormGroup>
 
-          <div className="mb-3">
-            <label htmlFor="password" className="form-label">Password</label>
-            <input
-              type="password"
-              id="password"
-              className="form-control"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              required
-            />
-          </div>
+            <FormGroup>
+              <Label for="password">Password</Label>
+              <Input
+                type="password"
+                id="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+              />
+            </FormGroup>
 
-          <button type="submit" className="btn btn-primary w-100">Login</button>
-        </form>
-      </div>
-    </div>
+            <Button color="primary" type="submit" block>
+              Login
+            </Button>
+          </Form>
+        </CardBody>
+      </Card>
+    </Container>
   );
 }
 
