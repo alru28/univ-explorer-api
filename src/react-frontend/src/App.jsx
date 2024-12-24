@@ -4,7 +4,8 @@ import Login from './pages/Login';
 import Register from './pages/Register';
 import Collection from './pages/Collection';
 import Explore from './pages/Explore';
-import PlanetDetail from './pages/PlanetDetail';
+import ExploredPlanetDetail from './pages/ExploredPlanetDetail';
+import CollectionPlanetDetail from './pages/CollectionPlanetDetail';
 import Profile from './pages/Profile';
 
 function App() {
@@ -15,8 +16,9 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/collection" element={<Collection />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/planet/:id" element={<PlanetDetail />} />
+        <Route path="/planet/:id" element={<ExploredPlanetDetail />} />
         <Route path="/profile" element={<Profile />} />
+        <Route path="/collection/planet/:name" element={<CollectionPlanetDetail />} />
       </Routes>
     </Router>
   );

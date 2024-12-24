@@ -1,6 +1,6 @@
 from fastapi import FastAPI, Request, HTTPException, Response, Depends
 from fastapi.openapi.docs import get_swagger_ui_html
-
+from fastapi.middleware.cors import CORSMiddleware
 
 import yaml
 import httpx
@@ -53,6 +53,14 @@ async def proxy_request(request: Request, target_url: str, headers=None):
 
 # GATEWAY APP
 app = FastAPI(title="UnivExplorer API", openapi_url = None)
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # Allows all origins
+    allow_credentials=True,
+    allow_methods=["*"],  # Allows all methods
+    allow_headers=["*"],  # Allows all headers
+)
 
 @app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], include_in_schema=False)
 async def collection_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):

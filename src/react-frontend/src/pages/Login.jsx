@@ -31,8 +31,8 @@ function Login() {
       // Store token (Local Storage for now ?????)
       localStorage.setItem('token', token);
 
-      // Redirect to profile
-      navigate('/profile');
+      // Redirect to collection
+      navigate('/collection');
     } catch (err) {
       setError('Invalid username or password');
     }
@@ -75,6 +75,9 @@ function Login() {
               Login
             </Button>
           </Form>
+          <p className="text-center mt-3">
+            Don't have an account? <a href="/register" title="Register for a new account">Register here</a>
+          </p>
         </CardBody>
       </Card>
     </Container>

@@ -1,6 +1,16 @@
 name: univ-explorer
 
 services:
+  frontend:
+    build:
+      context: ./react-frontend
+    ports:
+      - "3000:80"
+    depends_on:
+      - gateway
+    networks:
+      - univ-network
+  
   gateway:
     build: ./api-gateway
     ports:
@@ -8,6 +18,7 @@ services:
     depends_on:
       - auth-service
       - collection-service
+      - exploration-service
     environment:
       - COLLECTION_SERVICE_URL=http://collection-service:8000
       - AUTH_SERVICE_URL=http://auth-service:3000
