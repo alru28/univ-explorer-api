@@ -1,0 +1,13 @@
+body {
+  margin: 0;
+  padding: 0;
+  height: 100vh;
+  background: url('/background.png') no-repeat center center fixed;
+  background-size: cover;
+  overflow-x: hidden;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  color: #ffffff; /* White or any light color */
+  font-family: 'Arial', sans-serif; /* Optional: set a clean font */
+}
