@@ -1,5 +1,6 @@
 import React from 'react';
-import { BrowserRouter as Router, Route, Routes } from 'react-router-dom';
+import { BrowserRouter as Router, Route, Routes, useLocation } from 'react-router-dom';
+import AppNavbar from './components/Navbar';
 import Login from './pages/Login';
 import Register from './pages/Register';
 import Collection from './pages/Collection';
@@ -9,8 +10,13 @@ import CollectionPlanetDetail from './pages/CollectionPlanetDetail';
 import Profile from './pages/Profile';
 
 function App() {
+  // Hide NavBar in login and register
+  const location = useLocation();
+  const showNavbar = location.pathname !== '/' && location.pathname !== '/register';
+
   return (
-    <Router>
+    <>
+      {showNavbar && <AppNavbar />}
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
@@ -20,8 +26,14 @@ function App() {
         <Route path="/profile" element={<Profile />} />
         <Route path="/collection/planet/:name" element={<CollectionPlanetDetail />} />
       </Routes>
-    </Router>
+  </>
   );
 }
 
-export default App;
+export default function AppWrapper() {
+  return (
+    <Router>
+      <App />
+    </Router>
+  );
+}

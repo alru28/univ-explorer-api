@@ -63,8 +63,8 @@ function Collection() {
                 <CardTitle tag="h5">{planet.name}</CardTitle>
                 <CardText>
                   {planet.distanceFromEarth
-                    ? `Distance from Earth: ${planet.distanceFromEarth.toFixed(2)} km`
-                    : "Distance not available"}
+                    ? `Distance from Earth: ${planet.distanceFromEarth.toExponential(2)} km`
+                    : "Not Available"}
                 </CardText>
                 <Button color="primary" href={`/collection/planet/${planet.name}`}>
                   View Details

@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const API = axios.create({
-  baseURL: import.meta.env.VITE_GATEWAY_API_URL || 'http://localhost:8080',
+  baseURL: import.meta.env.VITE_GATEWAY_API_URL || 'http://localhost:8080', // Esto debería ser la dirección del BACKEND alojado en X
 });
 
 // Auth Service

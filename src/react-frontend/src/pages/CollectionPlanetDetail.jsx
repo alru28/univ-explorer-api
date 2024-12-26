@@ -95,10 +95,10 @@ function CollectionPlanetDetail() {
         <CardBody>
           <CardTitle tag="h2">{planet.name}</CardTitle>
           <CardText>Type: {planet.type}</CardText>
-          <CardText>Distance from Earth: {planet.distanceFromEarth ? `${planet.distanceFromEarth.toFixed(2)} light-years` : "Unknown"}</CardText>
-          <CardText>Mass: {planet.mass} kg</CardText>
-          <CardText>Radius: {planet.radius} km</CardText>
-          <CardText>Diameter: {planet.diameter} km</CardText>
+          <CardText>Distance from Earth: {planet.distanceFromEarth ? `${planet.distanceFromEarth.toExponential(2)} km` : "Unknown"}</CardText>
+          <CardText>Mass: {planet.mass.toExponential(2)} kg</CardText>
+          <CardText>Radius: {planet.radius.toExponential(2)} km</CardText>
+          <CardText>Diameter: {planet.diameter.toExponential(2)} km</CardText>
           <CardText>Gravity: {planet.gravity} m/s²</CardText>
           <CardText>Temperature: {planet.temperature} K</CardText>
           <CardText>Civilization: {planet.civilization}</CardText>
