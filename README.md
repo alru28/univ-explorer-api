@@ -38,11 +38,15 @@ This will start all microservices, the unified gateway API, and the frontend.
 
 ## Usage
 
-Once the installation is complete, you can access UnivExplorer by opening your web browser and navigating to:
+Once the installation is complete, you can access UnivExplorer's frontend by opening your web browser and navigating to:
 
-> http://localhost:8080
+> http://localhost:3000
 
 From there, you can register, log in, explore the planets, and even discover new celestial bodies to share with the UnivExplorer community.
+
+Besides, you can also check our programatic API by opening your web browser and navigating to:
+
+> http://localhost:8080
 
 ## Contributing
 
