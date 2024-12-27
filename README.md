@@ -31,7 +31,7 @@ To set up UnivExplorer locally, follow these steps:
 
 2. Launch the Docker containers:
 	```bash
-    docker-compose up
+    docker compose up
 	```
 	
 This will start all microservices, the unified gateway API, and the frontend.
