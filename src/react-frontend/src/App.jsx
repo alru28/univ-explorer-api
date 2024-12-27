@@ -22,8 +22,8 @@ function App() {
         <Route path="/register" element={<Register />} />
         <Route path="/collection" element={<Collection />} />
         <Route path="/explore" element={<Explore />} />
-        <Route path="/planet/:id" element={<ExploredPlanetDetail />} />
-        <Route path="/profile" element={<Profile />} />
+        <Route path="/explore/planet/:id" element={<ExploredPlanetDetail />} />
+        <Route path="/profile/:username" element={<Profile />} />
         <Route path="/collection/planet/:name" element={<CollectionPlanetDetail />} />
       </Routes>
   </>

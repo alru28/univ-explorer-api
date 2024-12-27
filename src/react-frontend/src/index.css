@@ -11,3 +11,27 @@ h1, h2, h3, h4, h5, h6 {
   color: #ffffff; /* White or any light color */
   font-family: 'Arial', sans-serif; /* Optional: set a clean font */
 }
+
+.card-explorer {
+  border-radius: 10px;
+  background-color: rgba(255, 255, 255, 0.1); /* Semi-transparent background */
+  padding: 15px;
+  box-shadow: 0px 4px 6px rgba(0, 0, 0, 0.3); /* Subtle shadow for depth */
+}
+
+.color-swatch {
+  display: inline-block;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%; /* For circles */
+  border: 1px solid #ccc; /* Optional border */
+  margin-right: 10px;
+}
+
+.color-invalid {
+  background-color: #333; /* Fallback for invalid colors */
+  color: #fff;
+  text-align: center;
+  line-height: 20px;
+  font-size: 12px;
+}

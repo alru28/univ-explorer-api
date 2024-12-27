@@ -19,7 +19,6 @@ import {
 import {
   getLatestExploredPlanets,
   generateNewExploredPlanet,
-  getExploredPlanetById,
   updateExploredPlanet,
 } from '../services/api';
 
@@ -141,7 +140,6 @@ function Explore() {
   return (
     <Container fluid className="mt-4">
       <Row>
-        {/* Left Column: Latest Explored Planets */}
         <Col md="4" className="text-center">
           <h3>Latest Explored Planets</h3>
           <Carousel dark slide activeIndex={activeIndex} next={next} previous={previous}>
@@ -151,7 +149,6 @@ function Explore() {
           </Carousel>
         </Col>
 
-        {/* Right Column: Exploration Functionality */}
         <Col md="8" className="text-center">
           <h3>Explore New Planets</h3>
           <div className="text-center">
@@ -172,7 +169,7 @@ function Explore() {
                 <CardBody>
                   <CardTitle tag="h5">
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="primary" className="w-100 text-center">Planet Name</Badge>
                       </Col>
                       <Col xs="8">
@@ -189,7 +186,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Mass</Badge>
                       </Col>
                       <Col xs="8">
@@ -206,7 +203,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Radius</Badge>
                       </Col>
                       <Col xs="8">
@@ -223,7 +220,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Temperature</Badge>
                       </Col>
                       <Col xs="8">
@@ -240,7 +237,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Civilization</Badge>
                       </Col>
                       <Col xs="8">
@@ -257,7 +254,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Main Event</Badge>
                       </Col>
                       <Col xs="8">
@@ -274,7 +271,7 @@ function Explore() {
 
                   <CardText>
                     <Row className="align-items-center">
-                      <Col xs="2">
+                      <Col xs="4">
                         <Badge color="info" className="w-100 text-center">Representative</Badge>
                       </Col>
                       <Col xs="8">
