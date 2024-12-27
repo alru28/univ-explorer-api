@@ -17,7 +17,7 @@ UnivExplorer is a web application that enables users to explore information abou
 - **Celestial Collection Service**: Developed with FastAPI, it fetches planetary data from Wikidata using SPARQL queries.
 - **Exploration Service**: Also created with FastAPI, this service uses LLMs hosted on Ollama to generate information about new planets and stores it in MongoDB.
 - **Gateway API**: A unified API gateway built with FastAPI encapsulates all functionalities and serves them to the frontend.
-- **ReactStrap Frontend**: The user interface is a React application styled with ReactStrap, providing a responsive and user-friendly experience.
+- **ReactStrap Frontend**: The user interface is a React application served with Vite and styled with ReactStrap, providing a responsive and user-friendly experience.
 
 ## Installation
 
