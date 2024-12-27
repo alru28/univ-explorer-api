@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { loginUser } from '../services/api';
 import {
@@ -15,12 +15,14 @@ import {
   Button,
   Alert,
 } from 'reactstrap';
+import { AuthContext } from '../App';
 
 function Login() {
   const [username, setUsername] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
   const navigate = useNavigate();
+  const { setIsAuthenticated } = useContext(AuthContext);
 
   const handleLogin = async (e) => {
     e.preventDefault();
@@ -30,10 +32,12 @@ function Login() {
       const response = await loginUser({ username, password });
       const token = response.data.token;
 
-      // Store token (Local Storage for now ?????)
+      // Store token and username in localStorage
       localStorage.setItem('token', token);
-      // Store username 
       localStorage.setItem('username', username);
+
+      // Update authentication state
+      setIsAuthenticated(true);
 
       // Redirect to collection
       navigate('/collection');
