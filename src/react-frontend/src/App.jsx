@@ -15,7 +15,7 @@ export const AuthContext = React.createContext();
 function App() {
   const location = useLocation();
   const { isAuthenticated, setIsAuthenticated } = React.useContext(AuthContext);
-  const showNavbar = location.pathname !== '/' && location.pathname !== '/register';
+  const showNavbar = location.pathname !== '/login' && location.pathname !== '/' && location.pathname !== '/register';
 
   const [authChecked, setAuthChecked] = useState(false);
 

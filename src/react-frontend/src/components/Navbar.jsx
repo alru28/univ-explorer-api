@@ -1,20 +1,33 @@
-import React, {useState} from 'react';
-import { NavLink } from 'react-router-dom';
+import React, {useState, useContext} from 'react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import {
   Navbar,
   NavbarBrand,
   Nav,
   NavItem,
   Collapse,
-  NavbarToggler
+  NavbarToggler,
+  Button,
 } from 'reactstrap';
 import logo from '../assets/logo.png';
+import { AuthContext } from '../App';
 
 const AppNavbar = (props) => {
 
     const username = localStorage.getItem('username');
     const [collapsed, setCollapsed] = useState(true);
     const toggleNavbar = () => setCollapsed(!collapsed);
+    const { isAuthenticated, setIsAuthenticated } = useContext(AuthContext);
+    const navigate = useNavigate();
+
+    const handleLogout = () => {
+        localStorage.removeItem('token');
+        localStorage.removeItem('username');
+
+        setIsAuthenticated(false);
+
+        navigate('/login');
+    };
 
     return (
     <Navbar color="dark" dark expand="md" className="mb-4">
@@ -41,6 +54,20 @@ const AppNavbar = (props) => {
             </NavItem>
             </Nav>
         </Collapse>
+        {isAuthenticated && (
+          <>
+            <NavItem>
+              <Button
+                color="danger"
+                size="sm"
+                onClick={handleLogout}
+                style={{ marginLeft: '10px' }}
+              >
+                Logout
+              </Button>
+            </NavItem>
+          </>
+        )}
     </Navbar>
     );
 };
