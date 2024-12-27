@@ -12,6 +12,7 @@ import logo from '../assets/logo.png';
 
 const AppNavbar = (props) => {
 
+    const username = localStorage.getItem('username');
     const [collapsed, setCollapsed] = useState(true);
     const toggleNavbar = () => setCollapsed(!collapsed);
 
@@ -34,7 +35,7 @@ const AppNavbar = (props) => {
                 </NavLink>
             </NavItem>
             <NavItem>
-                <NavLink to="/profile" className="nav-link">
+                <NavLink to={`/profile/${username}`} className="nav-link">
                 Profile
                 </NavLink>
             </NavItem>

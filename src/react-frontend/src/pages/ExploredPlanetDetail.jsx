@@ -7,7 +7,6 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardText,
   Badge,
   Spinner,
   Alert,
@@ -78,7 +77,7 @@ function ExploredPlanetDetail() {
                     <img
                       src="/default-user.png"
                       alt="Explorer"
-                      style={{ width: '80px', borderRadius: '50%' }}
+                      style={{ width: '80px', borderRadius: '50%', border: '2px solid #000' }}
                     />
                     <p className="mt-2 mb-0">
                       <Link to={`/profile/${planet.username}`} className="text-decoration-none">
@@ -89,7 +88,7 @@ function ExploredPlanetDetail() {
                   </div>
                 </Col>
                 <Col xs="12" md="9">
-                  <h4 className="text-light">Main Event</h4>
+                  <h4 className="text-dark">Main Event</h4>
                   <p className="text-muted">{planet.main_event}</p>
                 </Col>
               </Row>
