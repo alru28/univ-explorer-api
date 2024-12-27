@@ -7,6 +7,8 @@ import {
   CardBody,
   CardTitle,
   Form,
+  Col,
+  Row,
   FormGroup,
   Label,
   Input,
@@ -44,69 +46,80 @@ function Register() {
 
   return (
     <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <Card style={{ width: '400px' }}>
-        <CardBody>
-          <CardTitle tag="h2" className="text-center mb-4">
-            Register
-          </CardTitle>
+      <Row className="align-items-center w-75">
+        <Col md="6" className="d-flex justify-content-center align-items-center">
+          <Card style={{ width: '400px' }}>
+            <CardBody>
+              <CardTitle tag="h2" className="text-center mb-4">
+                Register
+              </CardTitle>
 
-          {error && <Alert color="danger">{error}</Alert>}
-          {success && <Alert color="success">{success}</Alert>}
+              {error && <Alert color="danger">{error}</Alert>}
+              {success && <Alert color="success">{success}</Alert>}
 
-          <Form onSubmit={handleRegister}>
-            <FormGroup>
-              <Label for="username">Username</Label>
-              <Input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </FormGroup>
+              <Form onSubmit={handleRegister}>
+                <FormGroup>
+                  <Label for="username">Username</Label>
+                  <Input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <FormGroup>
-              <Label for="email">Email</Label>
-              <Input
-                type="email"
-                id="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-            </FormGroup>
+                <FormGroup>
+                  <Label for="email">Email</Label>
+                  <Input
+                    type="email"
+                    id="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <FormGroup>
-              <Label for="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </FormGroup>
+                <FormGroup>
+                  <Label for="password">Password</Label>
+                  <Input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <FormGroup>
-              <Label for="confirmPassword">Confirm Password</Label>
-              <Input
-                type="password"
-                id="confirmPassword"
-                value={confirmPassword}
-                onChange={(e) => setConfirmPassword(e.target.value)}
-                required
-              />
-            </FormGroup>
+                <FormGroup>
+                  <Label for="confirmPassword">Confirm Password</Label>
+                  <Input
+                    type="password"
+                    id="confirmPassword"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <Button color="primary" type="submit" block>
-              Register
-            </Button>
-          </Form>
-          <p className="text-center mt-3">
-            Are you registered already? <a href="/" title="Login into account">Login here</a>
-          </p>
-        </CardBody>
-      </Card>
+                <Button color="primary" type="submit" block>
+                  Register
+                </Button>
+              </Form>
+              <p className="text-center mt-3">
+                Are you registered already? <a href="/" title="Login into account">Login here</a>
+              </p>
+            </CardBody>
+          </Card>
+          </Col>
+        <Col md="6" className="d-flex justify-content-center align-items-center">
+          <img
+            src="/logo.png"
+            alt="App Logo"
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '10px', marginBottom: '80px' }}
+          />
+        </Col>
+      </Row>
     </Container>
   );
 }

@@ -93,47 +93,47 @@ function ExploredPlanetDetail() {
                 </Col>
               </Row>
 
-              <Row>
-                <Col xs="4" className="mb-3">
+              <Row className="d-flex justify-content-center align-items-center text-center">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Mass</Badge>
                   <p>{planet.mass ? `${planet.mass} kg` : 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Radius</Badge>
                   <p>{planet.radius ? `${planet.radius} km` : 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Gravity</Badge>
                   <p>{planet.gravity ? `${planet.gravity} m/s²` : 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Temperature</Badge>
                   <p>{planet.temperature ? `${planet.temperature} °C` : 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Civilization</Badge>
                   <p>{planet.civilization || 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Demonym</Badge>
                   <p>{planet.demonym || 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Representative</Badge>
                   <p>{planet.representative || 'Unknown'}</p>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Primary Color</Badge>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-center mt-2">
                     {renderColorSwatch(planet.color_base)}
-                    <span>{planet.color_base || 'Unknown'}</span>
+                    <span className="text-muted">{planet.color_base || 'Unknown'}</span>
                   </div>
                 </Col>
-                <Col xs="4" className="mb-3">
+                <Col xs="6" md="4" className="mb-3">
                   <Badge color="info">Secondary Color</Badge>
-                  <div className="d-flex align-items-center">
+                  <div className="d-flex align-items-center justify-content-center mt-2">
                     {renderColorSwatch(planet.color_extra)}
-                    <span>{planet.color_extra || 'Unknown'}</span>
+                    <span className="text-muted">{planet.color_extra || 'Unknown'}</span>
                   </div>
                 </Col>
               </Row>

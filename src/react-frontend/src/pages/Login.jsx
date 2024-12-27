@@ -5,6 +5,8 @@ import {
   Container,
   Card,
   CardBody,
+  Row,
+  Col,
   CardTitle,
   Form,
   FormGroup,
@@ -42,46 +44,57 @@ function Login() {
 
   return (
     <Container className="d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
-      <Card style={{ width: '400px' }}>
-        <CardBody>
-          <CardTitle tag="h2" className="text-center mb-4">
-            Login
-          </CardTitle>
+      <Row className="align-items-center w-75">
+        <Col md="6" className="d-flex justify-content-center align-items-center">
+          <Card style={{ width: '400px' }}>
+            <CardBody>
+              <CardTitle tag="h2" className="text-center mb-4">
+                Login
+              </CardTitle>
 
-          {error && <Alert color="danger">{error}</Alert>}
+              {error && <Alert color="danger">{error}</Alert>}
 
-          <Form onSubmit={handleLogin}>
-            <FormGroup>
-              <Label for="username">Username</Label>
-              <Input
-                type="text"
-                id="username"
-                value={username}
-                onChange={(e) => setUsername(e.target.value)}
-                required
-              />
-            </FormGroup>
+              <Form onSubmit={handleLogin}>
+                <FormGroup>
+                  <Label for="username">Username</Label>
+                  <Input
+                    type="text"
+                    id="username"
+                    value={username}
+                    onChange={(e) => setUsername(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <FormGroup>
-              <Label for="password">Password</Label>
-              <Input
-                type="password"
-                id="password"
-                value={password}
-                onChange={(e) => setPassword(e.target.value)}
-                required
-              />
-            </FormGroup>
+                <FormGroup>
+                  <Label for="password">Password</Label>
+                  <Input
+                    type="password"
+                    id="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                  />
+                </FormGroup>
 
-            <Button color="primary" type="submit" block>
-              Login
-            </Button>
-          </Form>
-          <p className="text-center mt-3">
-            Don't have an account? <a href="/register" title="Register for a new account">Register here</a>
-          </p>
-        </CardBody>
-      </Card>
+                <Button color="primary" type="submit" block>
+                  Login
+                </Button>
+              </Form>
+              <p className="text-center mt-3">
+                Don't have an account? <a href="/register" title="Register for a new account">Register here</a>
+              </p>
+            </CardBody>
+          </Card>
+        </Col>
+        <Col md="6" className="d-flex justify-content-center align-items-center">
+          <img
+            src="/logo.png"
+            alt="App Logo"
+            style={{ maxWidth: '100%', height: 'auto', borderRadius: '10px', marginBottom: '80px' }}
+          />
+        </Col>
+      </Row>
     </Container>
   );
 }
