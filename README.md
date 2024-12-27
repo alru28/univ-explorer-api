@@ -46,7 +46,7 @@ From there, you can register, log in, explore the planets, and even discover new
 
 Besides, you can also check our programatic API by opening your web browser and navigating to:
 
-> http://localhost:8080
+> http://localhost:8080/docs
 
 ## Contributing
 
