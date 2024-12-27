@@ -474,6 +474,8 @@ paths:
               schema:
                 type: object
                 properties:
+                  _id:
+                    type: string
                   name:
                     type: string
                   color_base:

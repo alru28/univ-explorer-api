@@ -41,7 +41,7 @@ export const updateExploredPlanet = (planetId, planetData, token) =>
     headers: { Authorization: `${token}` },
   });
 export const getExploredPlanetsByUser = (username, token) =>
-  API.get(`/exploration/planets/user/${username}`, {
+  API.get(`/exploration/planets/user/${username}`, { // Este username no es necesario en teoría, a no ser que se visite el perfil de otro explorador
     headers: { Authorization: `${token}` },
   });
 export const generateNewExploredPlanet = (username, token) =>
@@ -51,7 +51,7 @@ export const generateNewExploredPlanet = (username, token) =>
     {
       headers: {
         Authorization: `${token}`,
-        'X-Username': username,
+        'X-Username': username, // Este username no es necesario en teoría
       },
     }
   );

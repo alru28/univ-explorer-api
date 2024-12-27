@@ -66,7 +66,7 @@ function Collection() {
                     ? `Distance from Earth: ${planet.distanceFromEarth.toExponential(2)} km`
                     : "Not Available"}
                 </CardText>
-                <Button color="primary" href={`/collection/planet/${planet.name}`}>
+                <Button className="w-auto" color="primary" href={`/collection/planet/${planet.name}`}>
                   View Details
                 </Button>
               </CardBody>

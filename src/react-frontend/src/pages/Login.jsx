@@ -30,6 +30,8 @@ function Login() {
 
       // Store token (Local Storage for now ?????)
       localStorage.setItem('token', token);
+      // Store username 
+      localStorage.setItem('username', username);
 
       // Redirect to collection
       navigate('/collection');

@@ -110,7 +110,7 @@ function CollectionPlanetDetail() {
       {moons.length > 0 && (
         <div className="mt-4">
           <h3>Moons</h3>
-          <Carousel activeIndex={activeIndex} next={next} previous={previous}>
+          <Carousel dark slide activeIndex={activeIndex} next={next} previous={previous}>
             {slides}
             <CarouselControl direction="prev" directionText="Previous" onClickHandler={previous} />
             <CarouselControl direction="next" directionText="Next" onClickHandler={next} />

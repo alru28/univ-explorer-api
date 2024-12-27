@@ -24,13 +24,18 @@ planet_collection = db["planets"]
 
 # Pydantic Models with MongoDB-compatible ID
 class PlanetBase(BaseModel):
+    id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id") # MongoDB-compatible ID
     name: str
     color_base: Optional[str] = None
     color_extra: Optional[str] = None
     image_url: Optional[str] = None  # Field for the image URL
 
-class PlanetDetail(PlanetBase):
-    id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id")  # MongoDB-compatible ID
+    class Config:
+        # Allows `_id` to be populated by MongoDB
+        populate_by_name = True
+        json_encoders = {ObjectId: str}
+
+class PlanetDetail(PlanetBase):  
     mass: Optional[float] = None
     radius: Optional[float] = None
     gravity: Optional[float] = None
@@ -40,13 +45,7 @@ class PlanetDetail(PlanetBase):
     demonym: Optional[str] = "None"
     representative: Optional[str] = "None"
     username: Optional[str] = None
-
-    class Config:
-        # Allows `_id` to be populated by MongoDB
-        populate_by_name = True
-        json_encoders = {ObjectId: str}
-          
-        
+     
 # Function to check if Ollama model is available and pull if necessary
 def check_and_pull_model():
     try:
