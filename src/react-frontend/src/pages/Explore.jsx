@@ -21,6 +21,7 @@ import {
   generateNewExploredPlanet,
   updateExploredPlanet,
 } from '../services/api';
+import { generatePlanetImageWithCache } from '../utils/image_generation';
 
 function Explore() {
   const [latestPlanets, setLatestPlanets] = useState([]);
@@ -115,7 +116,9 @@ function Explore() {
     }
   };
 
-  const slides = latestPlanets.map((planet) => (
+  const slides = latestPlanets.map((planet) => {
+    const image_url = generatePlanetImageWithCache(planet._id, planet.color_base, planet.color_extra);
+    return (
     <CarouselItem
       key={planet.name}
       onExiting={() => setAnimating(true)}
@@ -123,7 +126,7 @@ function Explore() {
     >
       <Card>
         <CardBody>
-          {/* <img src={planet.image_url} alt={planet.name} style={{ width: '100%' }} /> NO HAY IMAGENES DE MOMENTO*/}
+          <img src={image_url} alt={planet.name} style={{ width: '100%' }} />
           <CardTitle tag="h5" className="text-center mt-2">{planet.name}</CardTitle>
           <Button
             color="primary"
@@ -135,7 +138,8 @@ function Explore() {
         </CardBody>
       </Card>
     </CarouselItem>
-  ));
+    );
+  });
 
   return (
     <Container fluid className="mt-4">

@@ -28,7 +28,7 @@ class PlanetBase(BaseModel):
     name: str
     color_base: Optional[str] = None
     color_extra: Optional[str] = None
-    image_url: Optional[str] = None  # Field for the image URL
+    # image_url: Optional[str] = None  # Ya no es necesario
 
     class Config:
         # Allows `_id` to be populated by MongoDB

@@ -12,6 +12,7 @@ import {
   Alert,
 } from 'reactstrap';
 import { getExploredPlanetById } from '../services/api';
+import { generatePlanetImageWithCache } from '../utils/image_generation';
 
 function ExploredPlanetDetail() {
   const { id: planetId } = useParams();
@@ -70,6 +71,14 @@ function ExploredPlanetDetail() {
               <CardTitle tag="h1" className="text-center text-primary mb-4">
                 {planet.name}
               </CardTitle>
+
+              <div className="text-center mb-4">
+                <img
+                  src={generatePlanetImageWithCache(planet._id, planet.color_base, planet.color_extra)}
+                  alt={planet.name}
+                  style={{ width: "50%", borderRadius: "10px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
+                />
+              </div>
 
               <Row className="mb-4">
                 <Col xs="12" md="3" className="text-center">
