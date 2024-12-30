@@ -7,7 +7,6 @@ import {
   Card,
   CardBody,
   CardTitle,
-  CardText,
   Spinner,
   Button,
   Alert,
@@ -16,10 +15,11 @@ import {
   CarouselControl,
 } from 'reactstrap';
 import { getExploredPlanetsByUser } from '../services/api';
+import { generatePlanetImageWithCache } from '../utils/image_generation';
 
 function Profile() {
   const { username } = useParams();
-  const [explorer, setExplorer] = useState({ username }); // Set username directly from params
+  const [explorer] = useState({ username });
   const [discoveries, setDiscoveries] = useState([]);
   const [activeIndex, setActiveIndex] = useState(0);
   const [animating, setAnimating] = useState(false);
@@ -57,27 +57,39 @@ function Profile() {
     setActiveIndex(nextIndex);
   };
 
-  const slides = discoveries.map((planet) => (
-    <CarouselItem
-      key={planet.name}
-      onExiting={() => setAnimating(true)}
-      onExited={() => setAnimating(false)}
-    >
-      <Card className="shadow-lg">
-        <CardBody>
-          {/* <img src={planet.image_url} alt={planet.name} style={{ width: '100%' }} /> NO HAY IMAGENES DE MOMENTO*/}
-          <CardTitle tag="h5" className="text-center mt-2">{planet.name}</CardTitle>
-          <Button
-            color="primary"
-            href={`/explore/planet/${planet._id}`}
-            className="mt-2 w-auto"
-          >
-            View Details
-          </Button>
-        </CardBody>
-      </Card>
-    </CarouselItem>
-  ));
+  const slides = discoveries.map((planet) => {
+    const image_url = generatePlanetImageWithCache(planet._id, planet.color_base, planet.color_extra);
+    return (
+      <CarouselItem
+        key={planet.name}
+        onExiting={() => setAnimating(true)}
+        onExited={() => setAnimating(false)}
+      >
+        <Card className="shadow-lg">
+          <CardBody>
+            <img
+              src={image_url}
+              alt={planet.name}
+              style={{
+                width: "100%",
+                height: "200px",
+                objectFit: "cover",
+                borderRadius: "10px",
+              }}
+            />
+            <CardTitle tag="h5" className="text-center mt-2">{planet.name}</CardTitle>
+            <Button
+              color="primary"
+              href={`/explore/planet/${planet._id}`}
+              className="mt-2 w-auto"
+            >
+              View Details
+            </Button>
+          </CardBody>
+        </Card>
+      </CarouselItem>
+    );
+  });
 
   if (loading) {
     return (
@@ -98,32 +110,67 @@ function Profile() {
   return (
     <Container className="mt-4">
       <Row>
-        <Col xs="12" md="3" className="text-center">
-          <div className="card-explorer">
-            <img
-              src="/default-user.png"
-              alt="Explorer"
-              style={{ width: '80px', borderRadius: '50%', border: '2px solid #000'}}
-            />
-            <p className="mt-2 mb-0">
-              <Link to={`/profile/${explorer.username}`} className="text-decoration-none">
-                {explorer.username}
-              </Link>
-            </p>
-            <p className="text-muted">Explorer</p>
-          </div>
-        </Col>
-        <Col md="9" className='text-center'>
-          <h3>Discoveries</h3>
-          {discoveries.length === 0 ? (
-            <p className="text-center text-muted">No discoveries yet.</p>
-          ) : (
-            <Carousel dark slide activeIndex={activeIndex} next={next} previous={previous}>
-              {slides}
-              <CarouselControl direction="prev" directionText="Previous" onClickHandler={previous} />
-              <CarouselControl direction="next" directionText="Next" onClickHandler={next} />
-            </Carousel>
-          )}
+        <Col>
+          <Card className="shadow-lg"> 
+            <CardBody>
+              <CardTitle tag="h1" className="text-center text-primary mb-4">
+                Explorer Profile
+              </CardTitle>
+
+              <Row className="mb-4 align-items-center">
+                <Col xs="12" md="6" className="text-center">
+                  <h3>Discoveries</h3>
+                  {discoveries.length === 0 ? (
+                    <p className="text-center text-muted">No discoveries yet.</p>
+                  ) : (
+                    <Carousel
+                      slide
+                      activeIndex={activeIndex}
+                      next={next}
+                      previous={previous}
+                      className="shadow-lg"
+                      style={{ borderRadius: "10px" }}
+                    >
+                      {slides}
+                      <CarouselControl direction="prev" directionText="Previous" onClickHandler={previous} />
+                      <CarouselControl direction="next" directionText="Next" onClickHandler={next} />
+                    </Carousel>
+                  )}
+                </Col>
+                <Col xs="12" md="6">
+                  <div
+                    className="d-flex flex-column justify-content-center align-items-center"
+                    style={{
+                      width: "100%",
+                      maxWidth: "300px",
+                      height: "300px",
+                      border: "3px solid black",
+                      borderRadius: "10px",
+                      margin: "auto",
+                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)",
+                    }}
+                  >
+                    <img
+                      src="/default-user.png"
+                      alt="Explorer"
+                      style={{
+                        width: "80px",
+                        borderRadius: "50%",
+                        border: "2px solid #000",
+                      }}
+                    />
+                    <p className="mt-2 mb-0 text-center">
+                      <Link to={`/profile/${explorer.username}`} className="text-decoration-none">
+                        {explorer.username}
+                      </Link>
+                    </p>
+                    <p className="text-muted text-center">Explorer</p>
+                  </div>
+                </Col>
+              </Row>
+
+            </CardBody>
+          </Card>
         </Col>
       </Row>
     </Container>

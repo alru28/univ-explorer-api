@@ -72,33 +72,55 @@ function ExploredPlanetDetail() {
                 {planet.name}
               </CardTitle>
 
-              <div className="text-center mb-4">
-                <img
-                  src={generatePlanetImageWithCache(planet._id, planet.color_base, planet.color_extra)}
-                  alt={planet.name}
-                  style={{ width: "50%", borderRadius: "10px", boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.1)" }}
-                />
-              </div>
-
-              <Row className="mb-4">
-                <Col xs="12" md="3" className="text-center">
-                  <div className="card-explorer">
+              <Row className="mb-4 align-items-center">
+                <Col xs="12" md="6" className="text-center">
+                  <img
+                    src={generatePlanetImageWithCache(planet._id, planet.color_base, planet.color_extra)}
+                    alt={planet.name}
+                    style={{
+                      width: "100%",
+                      maxWidth: "300px",
+                      borderRadius: "10px",
+                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)",
+                    }}
+                  />
+                </Col>
+                <Col xs="12" md="6">
+                  <div
+                    className="d-flex flex-column justify-content-center align-items-center"
+                    style={{
+                      width: "100%",
+                      maxWidth: "300px",
+                      height: "300px",
+                      border: "3px solid black",
+                      borderRadius: "10px",
+                      margin: "auto",
+                      boxShadow: "0px 4px 6px rgba(0, 0, 0, 0.3)",
+                    }}
+                  >
                     <img
                       src="/default-user.png"
                       alt="Explorer"
-                      style={{ width: '80px', borderRadius: '50%', border: '2px solid #000' }}
+                      style={{
+                        width: "80px",
+                        borderRadius: "50%",
+                        border: "2px solid #000",
+                      }}
                     />
-                    <p className="mt-2 mb-0">
+                    <p className="mt-2 mb-0 text-center">
                       <Link to={`/profile/${planet.username}`} className="text-decoration-none">
                         {planet.username}
                       </Link>
                     </p>
-                    <p className="text-muted">Explorer</p>
+                    <p className="text-muted text-center">Explorer</p>
                   </div>
                 </Col>
-                <Col xs="12" md="9">
-                  <h4 className="text-dark">Main Event</h4>
-                  <p className="text-muted">{planet.main_event}</p>
+              </Row>
+
+              <Row className="mb-4">
+                <Col>
+                  <h4 className="text-dark text-center">Main Event</h4>
+                  <p className="text-muted text-center">{planet.main_event}</p>
                 </Col>
               </Row>
 

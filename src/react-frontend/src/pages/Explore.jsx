@@ -145,8 +145,8 @@ function Explore() {
     <Container fluid className="mt-4">
       <Row>
         <Col md="4" className="text-center">
-          <h3>Latest Explored Planets</h3>
-          <Carousel dark slide activeIndex={activeIndex} next={next} previous={previous}>
+          <h3>Recently Explored Planets</h3>
+          <Carousel slide activeIndex={activeIndex} next={next} previous={previous}>
             {slides}
             <CarouselControl direction="prev" directionText="Previous" onClickHandler={previous} />
             <CarouselControl direction="next" directionText="Next" onClickHandler={next} />
