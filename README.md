@@ -30,6 +30,7 @@ To set up UnivExplorer locally, follow these steps:
    ```
 
 2. Launch the Docker containers:
+    
     For NVIVDIA GPU users:
 	```bash
     docker compose -f docker-compose-nvidia.yml up
