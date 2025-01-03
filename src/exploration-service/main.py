@@ -161,13 +161,9 @@ async def explore(username: Optional[str] = Header(None, alias="X-Username")):
         raise HTTPException(status_code=500, detail="Failed to generate planet data")
 
     try:
-        json_data = json.loads(response.text)
-        
-        print("JSON Data: ", json_data)
-        
+        json_data = json.loads(response.text)     
         planet_data = json.loads(json_data['response'])
         
-        print("Planet Data: ", planet_data)
     except json.JSONDecodeError:
         raise HTTPException(status_code=500, detail="Invalid response from LLM")
     
