@@ -30,8 +30,14 @@ To set up UnivExplorer locally, follow these steps:
    ```
 
 2. Launch the Docker containers:
+    For NVIVDIA GPU users:
 	```bash
-    docker compose up
+    docker compose -f docker-compose-nvidia.yml up
+	```
+
+    For the rest of users:
+    ```bash
+    docker compose -f docker-compose.yml up
 	```
 	
 This will start all microservices, the unified gateway API, and the frontend.
