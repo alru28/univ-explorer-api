@@ -5,13 +5,14 @@ const YAML = require('yamljs');
 const { Pool } = require('pg');
 const authRoutes = require('./routes/auth');
 
+// APP
 const app = express();
 
-// Middleware
+// CORS
 app.use(express.json());
 app.use(cors());
 
-// PostgreSQL pool setup
+// POSTGRESQL
 const pool = new Pool({
     host: process.env.DB_HOST,
     port: process.env.DB_PORT,
@@ -20,35 +21,33 @@ const pool = new Pool({
     database: process.env.DB_NAME,
 });
 
-// Error handler for pool
 pool.on('error', (err) => {
     console.error('Unexpected error on idle client', err);
     process.exit(-1);
 });
 
-// Attach pool
+
 app.use((req, res, next) => {
     req.pool = pool;
     next();
 });
 
-// Auth Router with base path logging
+// ROUTES
 app.use('/', (req, res, next) => {
     console.log(`Incoming ${req.method} request to: ${req.originalUrl}`);
     next();
 }, authRoutes);
 
-// Setup Swagger
+// SWAGGER DOC
 const swaggerDocument = YAML.load('./api-doc.yaml');
 app.use('/docs', swaggerUi.serve, swaggerUi.setup(swaggerDocument));
 
-// Error handling middleware
+// ERROR HANDLING
 app.use((err, req, res, next) => {
     console.error(err.stack);
     res.status(500).send('Something broke!');
 });
 
-// 404 handler
 app.use((req, res) => {
     console.log(`404: ${req.method} ${req.originalUrl}`);
     res.status(404).send('Route not found');

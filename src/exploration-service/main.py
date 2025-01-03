@@ -14,24 +14,22 @@ import json
 MONGODB_URL = os.getenv("MONGODB_URL", "mongodb://mongo_user:mongo_pass@mongodb:27017/exploration_db")
 OLLAMA_URL = os.getenv("OLLAMA_URL", "http://ollama:11434")
 
-# Initialize FastAPI app
+# APP
 app = FastAPI(title="Exploration Service API", openapi_url="/openapi.json")
 
-# MongoDB Connection Setup
+# MONGODB
 client = MongoClient(MONGODB_URL)
 db = client["exploration_db"]
 planet_collection = db["planets"]
 
-# Pydantic Models with MongoDB-compatible ID
+# MODELS
 class PlanetBase(BaseModel):
     id: str = Field(default_factory=lambda: str(ObjectId()), alias="_id") # MongoDB-compatible ID
     name: str
     color_base: Optional[str] = None
     color_extra: Optional[str] = None
-    # image_url: Optional[str] = None  # Ya no es necesario
 
     class Config:
-        # Allows `_id` to be populated by MongoDB
         populate_by_name = True
         json_encoders = {ObjectId: str}
 
@@ -46,7 +44,7 @@ class PlanetDetail(PlanetBase):
     representative: Optional[str] = "None"
     username: Optional[str] = None
      
-# Function to check if Ollama model is available and pull if necessary
+# HELPER FUNCTIONS
 def check_and_pull_model():
     try:
         response = requests.get(f"{OLLAMA_URL}/api/tags")
@@ -61,8 +59,6 @@ def check_and_pull_model():
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
-# Helper functions for randomization of the generated planets
 def select_adjective():
     adjectives = [
         "mystical", "ancient", "futuristic", "exotic", "celestial", "enigmatic",
@@ -76,15 +72,14 @@ def select_adjective():
     ]
     return random.choice(adjectives), random.choice(adjectives)
 
-# FastAPI Startup Event
+# STARTUP EVENTS
 @app.on_event("startup")
 async def startup_event():
     check_and_pull_model()
     
     
 
-# FastAPI Routes
-
+# ROUTES
 @app.get("/planets/all", response_model=List[PlanetDetail])
 async def get_all_planets():
     planets = list(planet_collection.find())
@@ -124,7 +119,6 @@ async def update_planet(planet_id: str, planet: PlanetDetail):
     except InvalidId:
         raise HTTPException(status_code=400, detail="Invalid planet ID format")
 
-    # Get id out to avoid error
     planet_data = {k: v for k, v in planet.dict(by_alias=True).items() if v is not None and k != "_id"}
     
 
@@ -156,7 +150,6 @@ async def explore(username: Optional[str] = Header(None, alias="X-Username")):
         "{\"name\":\"X\", \"color_base\":\"X\", \"color_extra\":\"X\", \"mass\":\"X\", \"radius\":\"X\", \"gravity\":\"X\", \"temperature\":\"X\", \"civilization\":\"X\", \"main_event\":\"X\", \"demonym\":\"X\", \"representative\":\"X\"}"
     )
 
-    # Request to container
     response = requests.post(
         f"{OLLAMA_URL}/api/generate",
         json={"model": "gemma2:2b-instruct-q4_K_M", "prompt": prompt, "format": "json", "stream": False, "options": {
@@ -182,7 +175,6 @@ async def explore(username: Optional[str] = Header(None, alias="X-Username")):
 
     planet = PlanetDetail(**planet_data)
 
-    # Store the planet in MongoDB
     planet_data = planet.dict(by_alias=True)
     result = planet_collection.insert_one(planet_data)
     planet_data["_id"] = result.inserted_id

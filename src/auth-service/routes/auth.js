@@ -3,15 +3,15 @@ const bcrypt = require('bcryptjs');
 const jwt = require('jsonwebtoken');
 const router = express.Router();
 
+// GLOBAL
 const secret = process.env.JWT_SECRET || 'example_secret';
 
-// Test endpoint
+// ROUTES
 router.get('/test', (req, res) => {
     console.log("Test endpoint hit");
     res.json({ message: 'Auth route is working!' });
 });
 
-// Register user
 router.post('/register', async (req, res) => {
     console.log('Register endpoint hit with body:', req.body);
     const { username, email, password } = req.body;
@@ -43,7 +43,6 @@ router.post('/register', async (req, res) => {
     }
 });
 
-// Login user
 router.post('/login', async (req, res) => {
     console.log('Login endpoint hit with body:', req.body);
     const { username, password } = req.body;

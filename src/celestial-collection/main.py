@@ -9,9 +9,10 @@ from fastapi.middleware.cors import CORSMiddleware
 WIKIDATA_SPARQL_URL = "https://query.wikidata.org/sparql"
 VALID_PLANET_NAMES = ["Earth", "Mars", "Saturn", "Venus", "Mercury", "Uranus", "Neptune", "Jupiter"]
 
+# APP
 app = FastAPI(title="Celestial Collection API", openapi_url="/openapi.json")
 
-# Configure CORS
+# CORS
 app.add_middleware(
     CORSMiddleware,
     allow_origins=["*"],  # Allows all origins
@@ -20,7 +21,7 @@ app.add_middleware(
     allow_headers=["*"],  # Allows all headers
 )
 
-# Models
+# MODELS
 class PlanetBase(BaseModel):
     name: str
     distanceFromEarth: Optional[float]
@@ -41,6 +42,7 @@ class Moon(BaseModel):
     discoverer: Optional[str] = "None"
 
 
+# ROUTES
 @app.get("/planets", response_model=List[PlanetBase])
 def get_planets():
     headers = {

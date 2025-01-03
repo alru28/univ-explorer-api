@@ -1,4 +1,4 @@
-db = db.getSiblingDB('exploration_db');  // Switch to the target database
+db = db.getSiblingDB('exploration_db');
 
 db.createUser({
   user: "mongo_user",

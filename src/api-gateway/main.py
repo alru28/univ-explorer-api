@@ -6,20 +6,17 @@ import yaml
 import httpx
 import os
 
-# MICROSERVICES
+# GLOBAL
 COLLECTION_SERVICE_URL = os.getenv("COLLECTION_SERVICE_URL", "http://collection-service:8000")
 AUTH_SERVICE_URL = os.getenv("AUTH_SERVICE_URL", "http://auth-service:3000")
 EXPLORATION_SERVICE_URL = os.getenv("EXPLORATION_SERVICE_URL", "http://exploration-service:8000")
 
 # GATEWAY HELPER FUNCTIONS
-
-# Verify JWT
 async def verify_jwt(request: Request):
     token = request.headers.get("Authorization")
     if not token:
         raise HTTPException(status_code=401, detail="Authorization token is missing")
 
-    # Send to auth-service
     async with httpx.AsyncClient() as client:
         try:
             response = await client.get(f"{AUTH_SERVICE_URL}/verify", headers={"Authorization": token})
@@ -30,12 +27,12 @@ async def verify_jwt(request: Request):
             user_info = response.json().get("user")
             if not user_info or "username" not in user_info:
                 raise HTTPException(status_code=401, detail="Invalid user info")
-            return user_info["username"]  # Return the username
+            return user_info["username"]
         
         except httpx.HTTPError as exc:
             raise HTTPException(status_code=500, detail="Authentication service error")
 
-# Proxy
+# PROXY
 async def proxy_request(request: Request, target_url: str, headers=None):
     method = request.method
     print(target_url)
@@ -54,14 +51,16 @@ async def proxy_request(request: Request, target_url: str, headers=None):
 # GATEWAY APP
 app = FastAPI(title="UnivExplorer API", openapi_url = None)
 
+# CORS
 app.add_middleware(
     CORSMiddleware,
-    allow_origins=["*"],  # Allows all origins
+    allow_origins=["*"],
     allow_credentials=True,
-    allow_methods=["*"],  # Allows all methods
-    allow_headers=["*"],  # Allows all headers
+    allow_methods=["*"],
+    allow_headers=["*"],
 )
 
+# PROXY ROUTES
 @app.api_route("/collection/{path:path}", methods=["GET", "POST", "PUT", "DELETE"], include_in_schema=False)
 async def collection_service_proxy(path: str, request: Request, token_verified: str = Depends(verify_jwt)):
     target_url = f"{COLLECTION_SERVICE_URL}/{path}".lstrip("/")
@@ -78,11 +77,11 @@ async def exploration_service_proxy(path: str, request: Request, token_verified:
 
     # Custom header for username
     headers = dict(request.headers)
-    headers["X-Username"] = token_verified  # Use custom header to pass the username
+    headers["X-Username"] = token_verified
 
     return await proxy_request(request, target_url, headers=headers)
 
-# CUSTOM DOCS
+# SWAGGER CUSTOM DOCS
 with open("api-doc.yaml", "r") as file:
     openapi_spec = yaml.safe_load(file)
 
